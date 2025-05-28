@@ -67,21 +67,51 @@ const CreateTermForm: React.FC = () => {
             />
 
             <label htmlFor={`modelo-${device.id}`}>Modelo:</label>
-            <input
-              type="text"
+            <select
               id={`modelo-${device.id}`}
               value={device.details.modelo || ""}
               onChange={(e) =>
                 handleDetailChange(device.id, "modelo", e.target.value)
               }
               required
-            />
+            >
+              <option value="">Selecione um modelo</option>
+              <option value="motorolag54">Motorola G54 5G</option>
+              <option value="motorolag53">Motorola G53 5G</option>
+              <option value="motorolag22">Motorola G2</option>
+              <option value="outro">Outro</option>
+            </select>
+
+            {device.details.modelo === "outro" && (
+              <div>
+                <label htmlFor={`modeloOutro-${device.id}`}>
+                  Especifique o modelo:
+                </label>
+                <input
+                  type="text"
+                  id={`modeloOutro-${device.id}`}
+                  value={device.details.modeloOutro || ""}
+                  onChange={(e) =>
+                    handleDetailChange(device.id, "modeloOutro", e.target.value)
+                  }
+                  required
+                />
+              </div>
+            )}
 
             <label htmlFor={`valor-${device.id}`}>Valor:</label>
             <input
               type="number"
               id={`valor-${device.id}`}
-              value={device.details.valor || ""}
+              value={
+                device.details.modelo === "motorolag54"
+                  ? "2540"
+                  : device.details.modelo === "motorolag53"
+                  ? "2150"
+                  : device.details.modelo === "motorolag22"
+                  ? "1750"
+                  : device.details.valor || ""
+              }
               onChange={(e) =>
                 handleDetailChange(device.id, "valor", e.target.value)
               }
