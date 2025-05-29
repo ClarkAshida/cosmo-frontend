@@ -9,12 +9,12 @@ export const generateFilledPDF = async (
   data: TermoData
 ) => {
   const pdfDoc = await PDFDocument.load(templateBytes);
-  const page = pdfDoc.getPages()[0];
-  const font = await pdfDoc.embedFont(StandardFonts.Helvetica);
+  const page = pdfDoc.getPages()[1];
+  const font = await pdfDoc.embedFont(StandardFonts.TimesRoman);
 
   const { height } = page.getSize();
 
-  const drawText = (text: string, x: number, y: number, size = 10) => {
+  const drawText = (text: string, x: number, y: number, size = 12) => {
     page.drawText(text, {
       x,
       y,
@@ -25,14 +25,14 @@ export const generateFilledPDF = async (
   };
 
   // 🧍 Dados do colaborador
-  drawText(data.colaborador.nome, 60, height - 115, 12);
-  drawText(data.colaborador.cpf, 60, height - 135, 12);
+  drawText(data.colaborador.nome, 210, 165, 12);
+  drawText(data.colaborador.cpf, 110, 120, 12);
 
   // 📅 Data atual
   const hoje = new Date();
-  drawText(hoje.getDate().toString().padStart(2, "0"), 100, 100);
-  drawText(hoje.toLocaleString("pt-BR", { month: "long" }), 135, 100);
-  drawText(hoje.getFullYear().toString(), 240, 100);
+  drawText(hoje.getDate().toString().padStart(2, "0"), height, 100);
+  drawText(hoje.toLocaleString("pt-BR", { month: "long" }), height, 100);
+  drawText(hoje.getFullYear().toString(), height, 100);
 
   // 🖥️ Dispositivos – formatar como uma pequena tabela de texto
   let startY = height - 200;
@@ -54,5 +54,8 @@ export const generateFilledPDF = async (
   // 💾 Gerar e salvar
   const pdfBytes = await pdfDoc.save();
   const blob = new Blob([pdfBytes], { type: "application/pdf" });
-  saveAs(blob, `Termo-${data.colaborador.nome}.pdf`);
+  saveAs(
+    blob,
+    `Termo-de-Responsabilidade--${data.dispositivos[0].type}--${data.colaborador.nome}.pdf`
+  );
 };

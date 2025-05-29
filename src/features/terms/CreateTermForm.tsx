@@ -55,15 +55,37 @@ const CreateTermForm: React.FC = () => {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    const dispositivosComPrefixo = devices.map((device) => ({
+      ...device,
+      type: `01 ${device.type.toUpperCase()}`, // adiciona o prefixo e maiúsculo
+    }));
+
+    // 2. Gerar os itens agregados para celular e notebook
+    const itensAgregados = devices.flatMap((device) => {
+      if (device.type === "celular" || device.type === "notebook") {
+        return [
+          {
+            id: `agregado-${device.id}`,
+            type: "01 CARREGADOR",
+            details: {}, // sem detalhes, só o tipo mesmo
+          },
+        ];
+      }
+      return [];
+    });
+
+    // 3. Combinar dispositivos principais + agregados
+    const dispositivosFinal = [...dispositivosComPrefixo, ...itensAgregados];
+
     const termoData: TermoData = {
       colaborador,
-      dispositivos: devices,
+      dispositivos: dispositivosFinal,
     };
 
-    console.log("Dados do termo:", termoData);
+    console.log("Dados do termo com prefixos e agregados:", termoData);
 
     try {
-      const response = await fetch("/termo-de-responsabilidade.pdf");
+      const response = await fetch("/termo-de-responsabilidade-1.pdf");
       const arrayBuffer = await response.arrayBuffer();
 
       await generateFilledPDF(new Uint8Array(arrayBuffer), termoData);
