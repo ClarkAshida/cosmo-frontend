@@ -12,8 +12,6 @@ export const generateFilledPDF = async (
   const page = pdfDoc.getPages()[1];
   const font = await pdfDoc.embedFont(StandardFonts.TimesRoman);
 
-  const { height } = page.getSize();
-
   const estadosPorExtenso: Record<string, string> = {
     RN: "Rio Grande do Norte",
     CE: "Ceará",
@@ -54,21 +52,42 @@ export const generateFilledPDF = async (
   );
   drawText(hoje.getFullYear().toString(), 425, 205, 12);
 
-  // 🖥️ Dispositivos – formatar como uma pequena tabela de texto
-  let startY = height - 200;
-  for (const device of data.dispositivos) {
-    const descricao =
-      `Tipo: ${device.type.toUpperCase()}, ` +
-      Object.entries(device.details)
-        .map(([k, v]) => `${k}: ${v}`)
-        .join(", ");
+  // Agora vamos desenhar as duas "tabelas" com os dispositivos:
+  let startYInfo = 460; // ajuste conforme seu layout (área da primeira tabela)
+  let startYValores = 460; // mesma altura inicial para a segunda tabela
 
-    drawText(descricao, 60, startY, 10);
-    startY -= 18;
-    if (startY < 120) {
-      // Prevenção de overflow: só 4-6 dispositivos por página (simplificado)
-      break;
+  for (const device of data.dispositivos) {
+    // Formata o tipo sem o prefixo "01 " para diferenciar (opcional)
+    // Ou usa direto device.type (já vem com "01 ...")
+    const tipo = device.type;
+
+    // Construção do texto para tabela INFORMAÇÕES
+    let infoText = "";
+    if (tipo.includes("CELULAR") || tipo.includes("APARELHO CELULAR")) {
+      // Por exemplo, "01 APARELHO CELULAR | IMEI: XXXXX"
+      infoText = `${tipo}IMEI: ${device.details.imei || ""}`;
+    } else if (tipo.includes("CHIP")) {
+      infoText = `${tipo}N DE TELEFONE: ${device.details.numero || ""}`;
+    } else if (tipo.includes("NOTEBOOK")) {
+      infoText = `${tipo}TAG: ${device.details.tag || ""}`;
+    } else if (tipo.includes("MONITOR")) {
+      infoText = `${tipo}PAT.: ${device.details.patrimonio || ""}`;
+    } else {
+      infoText = `${tipo}`;
     }
+
+    drawText(infoText, 60, startYInfo, 10);
+
+    // Construção do texto para tabela VALORES
+    const valorText = ` ${tipo}R$ ${device.details.valor || "0,00"}${
+      device.details.notaFiscal || ""
+    }`;
+    drawText(valorText, 320, startYValores, 10);
+
+    startYInfo -= 18;
+    startYValores -= 18;
+
+    if (startYInfo < 120) break; // limita linhas para não ultrapassar página
   }
 
   // 💾 Gerar e salvar
