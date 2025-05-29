@@ -14,6 +14,14 @@ export const generateFilledPDF = async (
 
   const { height } = page.getSize();
 
+  const estadosPorExtenso: Record<string, string> = {
+    RN: "Rio Grande do Norte",
+    CE: "Ceará",
+    SP: "São Paulo",
+    MG: "Minas Gerais",
+    // outros estados aqui...
+  };
+
   const drawText = (text: string, x: number, y: number, size = 12) => {
     page.drawText(text, {
       x,
@@ -24,15 +32,27 @@ export const generateFilledPDF = async (
     });
   };
 
+  // Dados de Endereço
+  const estadoExtenso =
+    estadosPorExtenso[data.colaborador.estado] || data.colaborador.estado;
+  drawText(estadoExtenso, 85, 205, 12);
+
   // 🧍 Dados do colaborador
   drawText(data.colaborador.nome, 210, 165, 12);
   drawText(data.colaborador.cpf, 110, 120, 12);
 
   // 📅 Data atual
   const hoje = new Date();
-  drawText(hoje.getDate().toString().padStart(2, "0"), height, 100);
-  drawText(hoje.toLocaleString("pt-BR", { month: "long" }), height, 100);
-  drawText(hoje.getFullYear().toString(), height, 100);
+  drawText(hoje.getDate().toString().padStart(2, "0"), 290, 205, 12);
+  drawText(
+    hoje
+      .toLocaleString("pt-BR", { month: "long" })
+      .replace(/^\w/, (c) => c.toUpperCase()),
+    325,
+    205,
+    12
+  );
+  drawText(hoje.getFullYear().toString(), 425, 205, 12);
 
   // 🖥️ Dispositivos – formatar como uma pequena tabela de texto
   let startY = height - 200;
