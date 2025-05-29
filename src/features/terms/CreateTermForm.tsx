@@ -1,19 +1,22 @@
 import React, { useState } from "react";
-
-// Definindo tipos
-interface DeviceFields {
-  id: string;
-  type: string;
-  details: {
-    [key: string]: string;
-  };
-}
+import type {
+  CollaboratorData,
+  DeviceFields,
+  TermoData,
+} from "../../types/termsTypes";
+import { generateFilledPDF } from "../../utils/fillTermoPDF";
 
 const CreateTermForm: React.FC = () => {
-  // Estado para armazenar os dispositivos
   const [devices, setDevices] = useState<DeviceFields[]>([
     { id: "device-1", type: "", details: {} },
   ]);
+
+  const [colaborador, setColaborador] = useState<CollaboratorData>({
+    email: "",
+    nome: "",
+    cpf: "",
+    estado: "",
+  });
 
   // Função para adicionar um novo dispositivo com ID único
   const addDevice = () => {
@@ -49,6 +52,26 @@ const CreateTermForm: React.FC = () => {
     );
   };
 
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const termoData: TermoData = {
+      colaborador,
+      dispositivos: devices,
+    };
+
+    console.log("Dados do termo:", termoData);
+
+    try {
+      const response = await fetch("/termo-de-responsabilidade.pdf");
+      const arrayBuffer = await response.arrayBuffer();
+
+      await generateFilledPDF(new Uint8Array(arrayBuffer), termoData);
+    } catch (error) {
+      console.error("Erro ao gerar PDF:", error);
+    }
+  };
+
   // Função para renderizar os campos específicos com base no tipo de dispositivo
   const renderDeviceDetails = (device: DeviceFields) => {
     switch (device.type) {
@@ -59,7 +82,7 @@ const CreateTermForm: React.FC = () => {
             <input
               type="text"
               id={`imei-${device.id}`}
-              value={device.details.tag || ""}
+              value={device.details.imei || ""}
               onChange={(e) =>
                 handleDetailChange(device.id, "imei", e.target.value)
               }
@@ -184,7 +207,7 @@ const CreateTermForm: React.FC = () => {
             <input
               type="text"
               id={`tag-${device.id}`}
-              value={device.details.tag || ""}
+              value={device.details.numero || ""}
               onChange={(e) =>
                 handleDetailChange(device.id, "numero", e.target.value)
               }
@@ -266,21 +289,61 @@ const CreateTermForm: React.FC = () => {
   };
 
   return (
-    <form>
+    <form onSubmit={handleSubmit}>
       <div>
         <h1>Informações do Colaborador</h1>
       </div>
       <div>
+        <label htmlFor="email">E-mail:</label>
+        <input
+          type="email"
+          id="email"
+          name="email"
+          value={colaborador.email}
+          onChange={(e) =>
+            setColaborador({ ...colaborador, email: e.target.value })
+          }
+          required
+        />
+        <button>🔍</button>
+      </div>
+      <div>
         <label htmlFor="name">Nome Completo do Responsável:</label>
-        <input type="text" id="name" name="name" required />
+        <input
+          type="text"
+          id="name"
+          name="name"
+          value={colaborador.nome}
+          onChange={(e) =>
+            setColaborador({ ...colaborador, nome: e.target.value })
+          }
+          required
+        />
       </div>
       <div>
         <label htmlFor="cpf">CPF:</label>
-        <input type="text" id="cpf" name="cpf" required />
+        <input
+          type="text"
+          id="cpf"
+          name="cpf"
+          value={colaborador.cpf}
+          onChange={(e) =>
+            setColaborador({ ...colaborador, cpf: e.target.value })
+          }
+          required
+        />
       </div>
       <div>
         <label htmlFor="estado">Estado:</label>
-        <select name="estado" id="estado">
+        <select
+          name="estado"
+          id="estado"
+          value={colaborador.estado}
+          onChange={(e) =>
+            setColaborador({ ...colaborador, estado: e.target.value })
+          }
+          required
+        >
           <option value="">Selecione</option>
           <option value="RN">RN</option>
           <option value="CE">CE</option>
@@ -337,6 +400,7 @@ const CreateTermForm: React.FC = () => {
               id={`equipamento-${device.id}`}
               value={device.type}
               onChange={(e) => handleTypeChange(device.id, e.target.value)}
+              required
             >
               <option value="">Selecione</option>
               <option value="celular">Celular</option>
