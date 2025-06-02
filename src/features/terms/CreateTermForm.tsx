@@ -15,7 +15,7 @@ const CreateTermForm: React.FC = () => {
     email: "",
     nome: "",
     cpf: "",
-    estado: "",
+    cidade: "",
   });
 
   // Função para adicionar um novo dispositivo com ID único
@@ -356,22 +356,17 @@ const CreateTermForm: React.FC = () => {
         />
       </div>
       <div>
-        <label htmlFor="estado">Estado:</label>
-        <select
-          name="estado"
-          id="estado"
-          value={colaborador.estado}
+        <label htmlFor="cidade">Cidade:</label>
+        <input
+          type="text"
+          id="cidade"
+          name="cidade"
+          value={colaborador.cidade}
           onChange={(e) =>
-            setColaborador({ ...colaborador, estado: e.target.value })
+            setColaborador({ ...colaborador, cidade: e.target.value })
           }
           required
-        >
-          <option value="">Selecione</option>
-          <option value="RN">RN</option>
-          <option value="CE">CE</option>
-          <option value="SP">SP</option>
-          <option value="MG">MG</option>
-        </select>
+        />
       </div>
 
       <div>

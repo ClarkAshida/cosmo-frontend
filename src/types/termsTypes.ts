@@ -12,7 +12,7 @@ export interface CollaboratorData {
   email: string;
   nome: string;
   cpf: string;
-  estado: string;
+  cidade: string;
 }
 
 export interface TermoData {
