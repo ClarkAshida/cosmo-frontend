@@ -60,32 +60,32 @@ const CreateTermForm: React.FC = () => {
       type: `01 ${device.type.toUpperCase()}`, // adiciona o prefixo e maiúsculo
     }));
 
-    // 2. Gerar os itens agregados para celular e notebook
-    const itensAgregados = devices.flatMap((device) => {
-      if (device.type === "celular" || device.type === "notebook") {
-        return [
-          {
-            id: `agregado-${device.id}`,
-            type: "01 CARREGADOR",
-            details: {}, // sem detalhes, só o tipo mesmo
-          },
-        ];
-      }
-      return [];
-    });
+    // // 2. Gerar os itens agregados para celular e notebook
+    // const itensAgregados = devices.flatMap((device) => {
+    //   if (device.type === "celular" || device.type === "notebook") {
+    //     return [
+    //       {
+    //         id: `agregado-${device.id}`,
+    //         type: "01 CARREGADOR",
+    //         details: {}, // sem detalhes, só o tipo mesmo
+    //       },
+    //     ];
+    //   }
+    //   return [];
+    // });
 
-    // 3. Combinar dispositivos principais + agregados
-    const dispositivosFinal = [...dispositivosComPrefixo, ...itensAgregados];
+    // // 3. Combinar dispositivos principais + agregados
+    // const dispositivosFinal = [...dispositivosComPrefixo, ...itensAgregados];
 
     const termoData: TermoData = {
       colaborador,
-      dispositivos: dispositivosFinal,
+      dispositivos: dispositivosComPrefixo,
     };
 
     console.log("Dados do termo com prefixos e agregados:", termoData);
 
     try {
-      const response = await fetch("/termo-de-responsabilidade-1.pdf");
+      const response = await fetch("/termo-de-responsabilidade-3.pdf");
       const arrayBuffer = await response.arrayBuffer();
 
       await generateFilledPDF(new Uint8Array(arrayBuffer), termoData);
@@ -97,7 +97,7 @@ const CreateTermForm: React.FC = () => {
   // Função para renderizar os campos específicos com base no tipo de dispositivo
   const renderDeviceDetails = (device: DeviceFields) => {
     switch (device.type) {
-      case "celular":
+      case "aparelho celular":
         return (
           <div>
             <label htmlFor={`imei-${device.id}`}>IMEI:</label>
@@ -281,13 +281,13 @@ const CreateTermForm: React.FC = () => {
               required
             />
 
-            <label htmlFor={`serviceTag-${device.id}`}>Service Tag:</label>
+            <label htmlFor={`tag-${device.id}`}>Tag:</label>
             <input
               type="text"
-              id={`serviceTag-${device.id}`}
-              value={device.details.serviceTag || ""}
+              id={`tag-${device.id}`}
+              value={device.details.tag || ""}
               onChange={(e) =>
-                handleDetailChange(device.id, "serviceTag", e.target.value)
+                handleDetailChange(device.id, "tag", e.target.value)
               }
               required
             />
@@ -301,6 +301,15 @@ const CreateTermForm: React.FC = () => {
                 handleDetailChange(device.id, "valor", e.target.value)
               }
               required
+            />
+            <label htmlFor={`notaFiscal-${device.id}`}>Nota Fiscal:</label>
+            <input
+              type="text"
+              id={`notaFiscal-${device.id}`}
+              value={device.details.notaFiscal || ""}
+              onChange={(e) =>
+                handleDetailChange(device.id, "notaFiscal", e.target.value)
+              }
             />
           </div>
         );
@@ -420,7 +429,7 @@ const CreateTermForm: React.FC = () => {
               required
             >
               <option value="">Selecione</option>
-              <option value="celular">Celular</option>
+              <option value="aparelho celular">Celular</option>
               <option value="notebook">Notebook</option>
               <option value="chip">Chip</option>
               <option value="monitor">Monitor</option>
