@@ -25,8 +25,8 @@ export const generateFilledPDF = async (
   };
 
   // 🧍 Dados do colaborador
-  drawText(data.colaborador.nome, 212, 168, 12);
-  drawText(data.colaborador.cpf, 112, 126, 12);
+  drawText(data.colaborador.nome, 212, 174, 12);
+  drawText(data.colaborador.cpf, 112, 130, 12);
 
   // 📅 Data atual
   const hoje = new Date();
@@ -39,8 +39,8 @@ export const generateFilledPDF = async (
   drawText(dataFormatada, 370, 205, 12);
 
   // 💻 Dados do Dispositivo
-  let alturaInicial = height - 170; // A partir de onde a lista de dispositivos vai começar (ajuste conforme necessário)
-  let alturaNotaFiscal = height - 420; // A partir de onde a nota fiscal vai começar (ajuste conforme necessário)
+  let alturaInicial = height - 205; // A partir de onde a lista de dispositivos vai começar (ajuste conforme necessário)
+  let alturaNotaFiscal = height - 440; // A partir de onde a nota fiscal vai começar (ajuste conforme necessário)
 
   // Para cada dispositivo, renderiza o tipo e o identificador único
   data.dispositivos.forEach((device) => {
@@ -72,16 +72,16 @@ export const generateFilledPDF = async (
 
     // Desenha o dispositivo na tabela de informações
     drawText(dispositivoTexto, 120, alturaInicial, 10);
-    drawText(identificador, 260, alturaInicial, 10);
+    drawText(identificador, 270, alturaInicial, 10);
 
     // Desenha as informações adicionais (valor e nota fiscal)
     drawText(dispositivoTexto, 110, alturaNotaFiscal, 10);
-    drawText(`R$ ${valor}`, 215, alturaNotaFiscal, 10);
-    drawText(notaFiscal, 350, alturaNotaFiscal, 10);
+    drawText(`R$ ${valor}`, 250, alturaNotaFiscal, 10);
+    drawText(notaFiscal, 340, alturaNotaFiscal, 10);
 
     // Diminui o Y para o próximo dispositivo
     alturaInicial -= 30;
-    alturaNotaFiscal -= 30;
+    alturaNotaFiscal -= 26;
   });
 
   // 💾 Gerar e salvar

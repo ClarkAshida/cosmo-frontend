@@ -85,7 +85,7 @@ const CreateTermForm: React.FC = () => {
     console.log("Dados do termo com prefixos e agregados:", termoData);
 
     try {
-      const response = await fetch("/termo-de-responsabilidade-3.pdf");
+      const response = await fetch("/termo-de-responsabilidade-4.pdf");
       const arrayBuffer = await response.arrayBuffer();
 
       await generateFilledPDF(new Uint8Array(arrayBuffer), termoData);
