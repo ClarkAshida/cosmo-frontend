@@ -1,91 +1,103 @@
-// src/utils/fillTermoPDF.ts
+import pdfMake from "pdfmake/build/pdfmake";
+import pdfFonts from "pdfmake/build/vfs_fonts";
+import { type TDocumentDefinitions } from "pdfmake/interfaces";
 
-import { saveAs } from "file-saver";
-import { PDFDocument, rgb, StandardFonts } from "pdf-lib";
-import type { TermoData } from "../types/termsTypes";
+pdfMake.vfs = pdfFonts.vfs;
 
-export const generateFilledPDF = async (
-  templateBytes: Uint8Array,
-  data: TermoData
-) => {
-  const pdfDoc = await PDFDocument.load(templateBytes);
-  const page = pdfDoc.getPages()[1];
-  const font = await pdfDoc.embedFont(StandardFonts.TimesRoman);
+export const fillTermoPDF = () => {
+  const docDefinition: TDocumentDefinitions = {
+    content: [
+      {
+        text: "Termo de Entrega de Equipamentos de TI",
+        style: "header",
+      },
+      {
+        text: "Este documento estabelece os termos e condições da entrega dos equipamentos de Tecnologia da Informação (TI) pela empresa.",
+        style: "paragraph",
+        margin: [0, 10, 0, 20],
+      },
 
-  const { height } = page.getSize();
+      // Tabela: Equipamento + Informações
+      {
+        text: "X EQUIPAMENTO INFORMAÇÕES",
+        bold: true,
+        margin: [0, 0, 0, 5],
+      },
+      {
+        table: {
+          headerRows: 1,
+          widths: ["*", "*"],
+          body: [
+            ["Descrição", "IMEI"],
+            ["01 APARELHO CELULAR", "356789101234567"],
+          ],
+        },
+        layout: "lightHorizontalLines",
+        margin: [0, 0, 0, 15],
+      },
 
-  const drawText = (text: string, x: number, y: number, size = 12) => {
-    page.drawText(text, {
-      x,
-      y,
-      size,
-      font,
-      color: rgb(0, 0, 0),
-    });
+      // Tabela: Equipamento + Valores + Nº Fiscal
+      {
+        text: "X EQUIPAMENTO VALORES N° FISCAL",
+        bold: true,
+        margin: [0, 0, 0, 5],
+      },
+      {
+        table: {
+          headerRows: 1,
+          widths: ["*", "*", "*"],
+          body: [
+            ["Descrição", "Valor", "Nº Fiscal"],
+            ["01 APARELHO CELULAR", "R$ N/A", "4234234"],
+          ],
+        },
+        layout: "lightHorizontalLines",
+        margin: [0, 0, 0, 25],
+      },
+
+      // Dados do colaborador
+      {
+        columns: [
+          { text: "Nome do Colaborador (a):", width: "40%" },
+          { text: "Flávio Alexandre", bold: true, width: "60%" },
+        ],
+        margin: [0, 0, 0, 5],
+      },
+      {
+        columns: [
+          { text: "CPF:", width: "20%" },
+          { text: "125.966.284-57", width: "40%" },
+          { text: "Matrícula:", width: "20%" },
+          { text: "N/A", width: "20%" },
+        ],
+        margin: [0, 0, 0, 5],
+      },
+
+      // Local e data
+      {
+        text: "Natal, 21 de Julho de 2025",
+        alignment: "right",
+        margin: [0, 30, 0, 10],
+      },
+
+      // Assinatura
+      {
+        text: "Assinatura: ___________________________",
+        margin: [0, 20, 0, 0],
+      },
+    ],
+    styles: {
+      header: {
+        fontSize: 16,
+        alignment: "center",
+        margin: [0, 0, 0, 10],
+      },
+      paragraph: {
+        fontSize: 11,
+        alignment: "justify",
+      },
+    },
   };
 
-  // 🧍 Dados do colaborador
-  drawText(data.colaborador.nome, 212, 174, 12);
-  drawText(data.colaborador.cpf, 112, 130, 12);
-
-  // 📅 Data atual
-  const hoje = new Date();
-  const dataFormatada = `${data.colaborador.cidade}, ${hoje
-    .getDate()
-    .toString()
-    .padStart(2, "0")} de ${hoje
-    .toLocaleString("pt-BR", { month: "long" })
-    .replace(/^\w/, (c) => c.toUpperCase())} de ${hoje.getFullYear()}`;
-  drawText(dataFormatada, 370, 205, 12);
-
-  // 💻 Dados do Dispositivo
-  let alturaInicial = height - 205; // A partir de onde a lista de dispositivos vai começar (ajuste conforme necessário)
-  let alturaNotaFiscal = height - 440; // A partir de onde a nota fiscal vai começar (ajuste conforme necessário)
-
-  // Para cada dispositivo, renderiza o tipo e o identificador único
-  data.dispositivos.forEach((device) => {
-    if (device.type.includes("CARREGADOR")) return; // Ignora dispositivos do tipo CARREGADOR
-
-    // Definindo o texto a ser exibido
-    const dispositivoTexto = `${device.type}`;
-    const valor = device.details.valor || "N/A";
-    const notaFiscal = device.details.notaFiscal || "N/A";
-    let identificador = "";
-
-    // Verifica o tipo do dispositivo e insere o identificador correspondente
-    switch (device.type) {
-      case "01 APARELHO CELULAR":
-        identificador = `IMEI: ${device.details.imei || ""}`;
-        break;
-      case "01 CHIP":
-        identificador = `Nº DE TELEFONE: ${device.details.numero || ""}`;
-        break;
-      case "01 NOTEBOOK":
-        identificador = `TAG: ${device.details.tag || ""}`;
-        break;
-      case "01 MONITOR":
-        identificador = `TAG: ${device.details.tag || ""}`;
-        break;
-      default:
-        identificador = `ID: ${device.id}`;
-    }
-
-    // Desenha o dispositivo na tabela de informações
-    drawText(dispositivoTexto, 120, alturaInicial, 10);
-    drawText(identificador, 270, alturaInicial, 10);
-
-    // Desenha as informações adicionais (valor e nota fiscal)
-    drawText(dispositivoTexto, 110, alturaNotaFiscal, 10);
-    drawText(`R$ ${valor}`, 250, alturaNotaFiscal, 10);
-    drawText(notaFiscal, 340, alturaNotaFiscal, 10);
-
-    // Diminui o Y para o próximo dispositivo
-    alturaInicial -= 30;
-    alturaNotaFiscal -= 26;
-  });
-
-  // 💾 Gerar e salvar
-  const pdfBytes = await pdfDoc.save();
-  const blob = new Blob([pdfBytes], { type: "application/pdf" });
-  saveAs(blob, `Termo-de-Responsabilidade--${data.colaborador.nome}.pdf`);
+  pdfMake.createPdf(docDefinition).download("arquivo.pdf");
 };

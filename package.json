@@ -12,8 +12,10 @@
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.7",
     "@tailwindcss/vite": "^4.1.7",
+    "@types/pdfmake": "^0.2.11",
     "file-saver": "^2.0.5",
     "pdf-lib": "^1.17.1",
+    "pdfmake": "^0.2.20",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
     "react-router-dom": "^7.6.1",
