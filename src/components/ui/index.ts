@@ -1,6 +1,12 @@
 export { Button } from "./button";
 export { Input } from "./input";
-export { Select } from "./select";
+export {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "./select";
 export { Label } from "./label";
 export {
   Card,

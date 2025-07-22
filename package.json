@@ -11,6 +11,7 @@
     "build:css": "tailwindcss -c tailwind.config.ts -i ./src/input.css -o ./dist/output.css --watch"
   },
   "dependencies": {
+    "@radix-ui/react-select": "^2.2.5",
     "@radix-ui/react-slot": "^1.2.3",
     "@types/pdfmake": "^0.2.11",
     "autoprefixer": "^10.4.21",

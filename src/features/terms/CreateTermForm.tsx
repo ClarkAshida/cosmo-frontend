@@ -5,14 +5,37 @@ import type {
   TermoData,
 } from "../../types/termsTypes";
 import { fillTermoPDF } from "../../utils/fillTermoPDF";
-import { Laptop, Save, Search, Trash, User } from "lucide-react";
+import {
+  Laptop,
+  Save,
+  Search,
+  Trash,
+  User,
+  Smartphone,
+  Monitor,
+  Cpu,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Select } from "@/components/ui/select";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const CreateTermForm: React.FC = () => {
+  // Definição dos tipos de equipamentos com ícones
+  const equipmentTypes = [
+    { value: "aparelho celular", label: "Celular", icon: Smartphone },
+    { value: "notebook", label: "Notebook", icon: Laptop },
+    { value: "chip", label: "Chip", icon: Cpu },
+    { value: "monitor", label: "Monitor", icon: Monitor },
+  ];
+
   const [devices, setDevices] = useState<DeviceFields[]>([
     { id: "device-1", type: "", details: {} },
   ]);
@@ -102,18 +125,20 @@ const CreateTermForm: React.FC = () => {
             <div className="space-y-2">
               <Label htmlFor={`modelo-${device.id}`}>Modelo</Label>
               <Select
-                id={`modelo-${device.id}`}
                 value={device.details.modelo || ""}
-                onChange={(e) =>
-                  handleDetailChange(device.id, "modelo", e.target.value)
+                onValueChange={(value) =>
+                  handleDetailChange(device.id, "modelo", value)
                 }
-                required
               >
-                <option value="">Selecione um modelo</option>
-                <option value="motorolag54">Motorola G54 5G</option>
-                <option value="motorolag53">Motorola G53 5G</option>
-                <option value="motorolag22">Motorola G2</option>
-                <option value="outro">Outro</option>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Selecione um modelo" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="motorolag54">Motorola G54 5G</SelectItem>
+                  <SelectItem value="motorolag53">Motorola G53 5G</SelectItem>
+                  <SelectItem value="motorolag22">Motorola G2</SelectItem>
+                  <SelectItem value="outro">Outro</SelectItem>
+                </SelectContent>
               </Select>
             </div>
 
@@ -368,7 +393,14 @@ const CreateTermForm: React.FC = () => {
                   }
                   required
                 />
-                <Button variant="search" size="icon" className="rounded-l-none">
+                <Button
+                  variant="default"
+                  size="icon"
+                  className="rounded-l-none"
+                  onClick={() => {
+                    console.log("Buscar colaborador");
+                  }}
+                >
                   <Search className="w-4 h-4" />
                 </Button>
               </div>
@@ -463,18 +495,24 @@ const CreateTermForm: React.FC = () => {
                         Tipo de Equipamento
                       </Label>
                       <Select
-                        id={`equipamento-${device.id}`}
                         value={device.type}
-                        onChange={(e) =>
-                          handleTypeChange(device.id, e.target.value)
+                        onValueChange={(value) =>
+                          handleTypeChange(device.id, value)
                         }
-                        required
                       >
-                        <option value="">Selecione</option>
-                        <option value="aparelho celular">Celular</option>
-                        <option value="notebook">Notebook</option>
-                        <option value="chip">Chip</option>
-                        <option value="monitor">Monitor</option>
+                        <SelectTrigger className="w-full">
+                          <SelectValue placeholder="Selecione o tipo de equipamento" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {equipmentTypes.map((type) => (
+                            <SelectItem key={type.value} value={type.value}>
+                              <div className="flex items-center gap-2">
+                                <type.icon className="w-4 h-4" />
+                                {type.label}
+                              </div>
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
                       </Select>
                     </div>
 
@@ -498,7 +536,7 @@ const CreateTermForm: React.FC = () => {
         </Card>
 
         <div className="flex justify-end pt-6">
-          <Button variant="cosmo" size="lg" className="gap-2 px-8">
+          <Button type="submit" size="lg" className="gap-2 px-8">
             <Save className="w-5 h-5" />
             Salvar Termo de Responsabilidade
           </Button>
