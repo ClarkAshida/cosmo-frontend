@@ -5,7 +5,12 @@ import type {
   TermoData,
 } from "../../types/termsTypes";
 import { fillTermoPDF } from "../../utils/fillTermoPDF";
-import { User } from "lucide-react";
+import { Laptop, Save, Search, Trash, User } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 const CreateTermForm: React.FC = () => {
   const [devices, setDevices] = useState<DeviceFields[]>([
@@ -81,39 +86,27 @@ const CreateTermForm: React.FC = () => {
       case "aparelho celular":
         return (
           <div className="grid grid-cols-1 gap-4">
-            <div>
-              <label
-                htmlFor={`imei-${device.id}`}
-                className="block text-sm font-medium text-foreground mb-2"
-              >
-                IMEI:
-              </label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor={`imei-${device.id}`}>IMEI</Label>
+              <Input
                 type="text"
                 id={`imei-${device.id}`}
                 value={device.details.imei || ""}
                 onChange={(e) =>
                   handleDetailChange(device.id, "imei", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 required
               />
             </div>
 
-            <div>
-              <label
-                htmlFor={`modelo-${device.id}`}
-                className="block text-sm font-medium text-foreground mb-2"
-              >
-                Modelo:
-              </label>
-              <select
+            <div className="space-y-2">
+              <Label htmlFor={`modelo-${device.id}`}>Modelo</Label>
+              <Select
                 id={`modelo-${device.id}`}
                 value={device.details.modelo || ""}
                 onChange={(e) =>
                   handleDetailChange(device.id, "modelo", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 required
               >
                 <option value="">Selecione um modelo</option>
@@ -121,38 +114,29 @@ const CreateTermForm: React.FC = () => {
                 <option value="motorolag53">Motorola G53 5G</option>
                 <option value="motorolag22">Motorola G2</option>
                 <option value="outro">Outro</option>
-              </select>
+              </Select>
             </div>
 
             {device.details.modelo === "outro" && (
-              <div>
-                <label
-                  htmlFor={`modeloOutro-${device.id}`}
-                  className="block text-sm font-medium text-foreground mb-2"
-                >
-                  Especifique o modelo:
-                </label>
-                <input
+              <div className="space-y-2">
+                <Label htmlFor={`modeloOutro-${device.id}`}>
+                  Especifique o modelo
+                </Label>
+                <Input
                   type="text"
                   id={`modeloOutro-${device.id}`}
                   value={device.details.modeloOutro || ""}
                   onChange={(e) =>
                     handleDetailChange(device.id, "modeloOutro", e.target.value)
                   }
-                  className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                   required
                 />
               </div>
             )}
 
-            <div>
-              <label
-                htmlFor={`valor-${device.id}`}
-                className="block text-sm font-medium text-foreground mb-2"
-              >
-                Valor:
-              </label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor={`valor-${device.id}`}>Valor</Label>
+              <Input
                 type="number"
                 id={`valor-${device.id}`}
                 value={
@@ -167,26 +151,19 @@ const CreateTermForm: React.FC = () => {
                 onChange={(e) =>
                   handleDetailChange(device.id, "valor", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 required
               />
             </div>
 
-            <div>
-              <label
-                htmlFor={`notaFiscal-${device.id}`}
-                className="block text-sm font-medium text-foreground mb-2"
-              >
-                Nota Fiscal:
-              </label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor={`notaFiscal-${device.id}`}>Nota Fiscal</Label>
+              <Input
                 type="text"
                 id={`notaFiscal-${device.id}`}
                 value={device.details.notaFiscal || ""}
                 onChange={(e) =>
                   handleDetailChange(device.id, "notaFiscal", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
               />
             </div>
           </div>
@@ -194,78 +171,54 @@ const CreateTermForm: React.FC = () => {
       case "notebook":
         return (
           <div className="grid grid-cols-1 gap-4">
-            <div>
-              <label
-                htmlFor={`tag-${device.id}`}
-                className="block text-sm font-medium text-foreground mb-2"
-              >
-                TAG:
-              </label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor={`tag-${device.id}`}>TAG</Label>
+              <Input
                 type="text"
                 id={`tag-${device.id}`}
                 value={device.details.tag || ""}
                 onChange={(e) =>
                   handleDetailChange(device.id, "tag", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 required
               />
             </div>
 
-            <div>
-              <label
-                htmlFor={`modelo-${device.id}`}
-                className="block text-sm font-medium text-foreground mb-2"
-              >
-                Modelo:
-              </label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor={`modelo-${device.id}`}>Modelo</Label>
+              <Input
                 type="text"
                 id={`modelo-${device.id}`}
                 value={device.details.modelo || ""}
                 onChange={(e) =>
                   handleDetailChange(device.id, "modelo", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 required
               />
             </div>
 
-            <div>
-              <label
-                htmlFor={`valor-${device.id}`}
-                className="block text-sm font-medium text-foreground mb-2"
-              >
-                Valor:
-              </label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor={`valor-${device.id}`}>Valor</Label>
+              <Input
                 type="number"
                 id={`valor-${device.id}`}
                 value={device.details.valor || ""}
                 onChange={(e) =>
                   handleDetailChange(device.id, "valor", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 required
               />
             </div>
 
-            <div>
-              <label
-                htmlFor={`notaFiscal-${device.id}`}
-                className="block text-sm font-medium text-foreground mb-2"
-              >
-                Nota Fiscal:
-              </label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor={`notaFiscal-${device.id}`}>Nota Fiscal</Label>
+              <Input
                 type="text"
                 id={`notaFiscal-${device.id}`}
                 value={device.details.notaFiscal || ""}
                 onChange={(e) =>
                   handleDetailChange(device.id, "notaFiscal", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
               />
             </div>
           </div>
@@ -274,59 +227,41 @@ const CreateTermForm: React.FC = () => {
       case "chip":
         return (
           <div className="grid grid-cols-1 gap-4">
-            <div>
-              <label
-                htmlFor={`numero-${device.id}`}
-                className="block text-sm font-medium text-foreground mb-2"
-              >
-                Número:
-              </label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor={`numero-${device.id}`}>Número</Label>
+              <Input
                 type="text"
-                id={`tag-${device.id}`}
+                id={`numero-${device.id}`}
                 value={device.details.numero || ""}
                 onChange={(e) =>
                   handleDetailChange(device.id, "numero", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 required
               />
             </div>
 
-            <div>
-              <label
-                htmlFor={`valor-${device.id}`}
-                className="block text-sm font-medium text-foreground mb-2"
-              >
-                Valor:
-              </label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor={`valor-${device.id}`}>Valor</Label>
+              <Input
                 type="number"
                 id={`valor-${device.id}`}
                 value={device.details.valor || ""}
                 onChange={(e) =>
                   handleDetailChange(device.id, "valor", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 required
               />
             </div>
 
-            <div>
-              <label
-                htmlFor={`notaFiscal-${device.id}`}
-                className="block text-sm font-medium text-foreground mb-2"
-              >
-                Nota Fiscal:
-              </label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor={`notaFiscal-${device.id}`}>Nota Fiscal</Label>
+              <Input
                 type="text"
                 id={`notaFiscal-${device.id}`}
                 value={device.details.notaFiscal || ""}
                 onChange={(e) =>
                   handleDetailChange(device.id, "notaFiscal", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
               />
             </div>
           </div>
@@ -335,97 +270,67 @@ const CreateTermForm: React.FC = () => {
       case "monitor":
         return (
           <div className="grid grid-cols-1 gap-4">
-            <div>
-              <label
-                htmlFor={`patrimonio-${device.id}`}
-                className="block text-sm font-medium text-foreground mb-2"
-              >
-                Patrimônio:
-              </label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor={`patrimonio-${device.id}`}>Patrimônio</Label>
+              <Input
                 type="text"
                 id={`patrimonio-${device.id}`}
                 value={device.details.patrimonio || ""}
                 onChange={(e) =>
                   handleDetailChange(device.id, "patrimonio", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 required
               />
             </div>
 
-            <div>
-              <label
-                htmlFor={`marca-${device.id}`}
-                className="block text-sm font-medium text-foreground mb-2"
-              >
-                Marca:
-              </label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor={`marca-${device.id}`}>Marca</Label>
+              <Input
                 type="text"
                 id={`marca-${device.id}`}
                 value={device.details.marca || ""}
                 onChange={(e) =>
                   handleDetailChange(device.id, "marca", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 required
               />
             </div>
 
-            <div>
-              <label
-                htmlFor={`tag-${device.id}`}
-                className="block text-sm font-medium text-foreground mb-2"
-              >
-                Tag:
-              </label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor={`tag-${device.id}`}>Tag</Label>
+              <Input
                 type="text"
                 id={`tag-${device.id}`}
                 value={device.details.tag || ""}
                 onChange={(e) =>
                   handleDetailChange(device.id, "tag", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 required
               />
             </div>
 
-            <div>
-              <label
-                htmlFor={`valor-${device.id}`}
-                className="block text-sm font-medium text-foreground mb-2"
-              >
-                Valor:
-              </label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor={`valor-${device.id}`}>Valor</Label>
+              <Input
                 type="number"
                 id={`valor-${device.id}`}
                 value={device.details.valor || ""}
                 onChange={(e) =>
                   handleDetailChange(device.id, "valor", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 required
               />
             </div>
 
-            <div>
-              <label
-                htmlFor={`notaFiscal-${device.id}`}
-                className="block text-sm font-medium text-foreground mb-2"
-              >
-                Nota Fiscal:
-              </label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor={`notaFiscal-${device.id}`}>Nota Fiscal</Label>
+              <Input
                 type="text"
                 id={`notaFiscal-${device.id}`}
                 value={device.details.notaFiscal || ""}
                 onChange={(e) =>
                   handleDetailChange(device.id, "notaFiscal", e.target.value)
                 }
-                className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
               />
             </div>
           </div>
@@ -437,183 +342,166 @@ const CreateTermForm: React.FC = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto">
-      <form
-        onSubmit={handleSubmit}
-        className="bg-white rounded-lg shadow-card p-8 space-y-8"
-      >
-        <div className="border-b border-border pb-6">
-          <h2 className="text-2xl font-semibold text-primary mb-6">
-            <User className="w-5 h-5" />
-            Informações do Colaborador
-          </h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label
-                htmlFor="email"
-                className="block text-sm font-medium text-foreground mb-2"
-              >
-                E-mail:
-              </label>
-              <div className="flex gap-2">
-                <input
+    <div className="max-w-6xl mx-auto p-6 space-y-8">
+      <form onSubmit={handleSubmit} className="space-y-8">
+        <Card className="shadow-card border-0">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-2 text-primary">
+              <User className="w-5 h-5" />
+              Informações do Colaborador
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-sm font-medium">
+                E-mail
+              </Label>
+              <div className="flex gap-0">
+                <Input
                   type="email"
                   id="email"
                   name="email"
+                  placeholder="colaborador@empresa.com"
                   value={colaborador.email}
                   onChange={(e) =>
                     setColaborador({ ...colaborador, email: e.target.value })
                   }
-                  className="flex-1 px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                   required
                 />
-                <button
-                  type="button"
-                  className="px-4 py-2 bg-secondary text-secondary-foreground rounded-md hover:bg-secondary/80 transition-colors"
-                >
-                  🔍
-                </button>
+                <Button variant="search" size="icon" className="rounded-l-none">
+                  <Search className="w-4 h-4" />
+                </Button>
               </div>
             </div>
 
-            <div>
-              <label
-                htmlFor="name"
-                className="block text-sm font-medium text-foreground mb-2"
-              >
-                Nome Completo do Responsável:
-              </label>
-              <input
-                type="text"
-                id="name"
-                name="name"
-                value={colaborador.nome}
-                onChange={(e) =>
-                  setColaborador({ ...colaborador, nome: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
-                required
-              />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label htmlFor="name" className="text-sm font-medium">
+                  Nome Completo
+                </Label>
+                <Input
+                  type="text"
+                  id="name"
+                  name="name"
+                  placeholder="Nome do responsável"
+                  value={colaborador.nome}
+                  onChange={(e) =>
+                    setColaborador({ ...colaborador, nome: e.target.value })
+                  }
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="cpf" className="text-sm font-medium">
+                  CPF
+                </Label>
+                <Input
+                  type="text"
+                  id="cpf"
+                  name="cpf"
+                  placeholder="000.000.000-00"
+                  value={colaborador.cpf}
+                  onChange={(e) =>
+                    setColaborador({ ...colaborador, cpf: e.target.value })
+                  }
+                  required
+                />
+              </div>
             </div>
 
-            <div>
-              <label
-                htmlFor="cpf"
-                className="block text-sm font-medium text-foreground mb-2"
-              >
-                CPF:
-              </label>
-              <input
-                type="text"
-                id="cpf"
-                name="cpf"
-                value={colaborador.cpf}
-                onChange={(e) =>
-                  setColaborador({ ...colaborador, cpf: e.target.value })
-                }
-                className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
-                required
-              />
-            </div>
-
-            <div>
-              <label
-                htmlFor="cidade"
-                className="block text-sm font-medium text-foreground mb-2"
-              >
-                Cidade:
-              </label>
-              <input
+            <div className="space-y-2">
+              <Label htmlFor="city" className="text-sm font-medium">
+                Cidade
+              </Label>
+              <Input
                 type="text"
                 id="cidade"
                 name="cidade"
+                placeholder="Cidade do colaborador"
                 value={colaborador.cidade}
                 onChange={(e) =>
                   setColaborador({ ...colaborador, cidade: e.target.value })
                 }
-                className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
                 required
               />
             </div>
-          </div>
-        </div>
+          </CardContent>
+        </Card>
 
-        <div>
-          <h2 className="text-2xl font-semibold text-primary mb-6">
-            Informações dos Equipamentos
-          </h2>
-
-          <div className="space-y-6">
+        <Card>
+          <CardHeader>
+            <CardTitle className="text-primary flex text-center items-center gap-2">
+              <Laptop className="w-5 h-5" />
+              Informações dos Equipamentos
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-6">
             {devices.map((device, index) => (
-              <div
-                key={device.id}
-                className="bg-muted/50 rounded-lg p-6 border border-border"
-              >
-                <div className="flex justify-between items-center mb-4">
-                  <h3 className="text-lg font-medium text-foreground">
-                    Equipamento {index + 1}
-                  </h3>
-                  {devices.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => removeDevice(device.id)}
-                      className="px-4 py-2 bg-danger text-danger-foreground rounded-md hover:bg-danger/80 transition-colors"
-                    >
-                      Remover
-                    </button>
-                  )}
-                </div>
-
-                <div className="space-y-4">
-                  <div>
-                    <label
-                      htmlFor={`equipamento-${device.id}`}
-                      className="block text-sm font-medium text-foreground mb-2"
-                    >
-                      Tipo de Equipamento:
-                    </label>
-                    <select
-                      id={`equipamento-${device.id}`}
-                      value={device.type}
-                      onChange={(e) =>
-                        handleTypeChange(device.id, e.target.value)
-                      }
-                      className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring focus:border-transparent"
-                      required
-                    >
-                      <option value="">Selecione</option>
-                      <option value="aparelho celular">Celular</option>
-                      <option value="notebook">Notebook</option>
-                      <option value="chip">Chip</option>
-                      <option value="monitor">Monitor</option>
-                    </select>
+              <Card key={device.id} className="bg-muted/50 border-border">
+                <CardContent className="p-6">
+                  <div className="flex justify-between items-center mb-4">
+                    <h3 className="text-lg font-medium text-foreground">
+                      Equipamento {index + 1}
+                    </h3>
+                    {devices.length > 1 && (
+                      <Button
+                        type="button"
+                        onClick={() => removeDevice(device.id)}
+                        variant="destructive"
+                        size="sm"
+                      >
+                        <Trash className="w-4 h-4" />
+                        Remover
+                      </Button>
+                    )}
                   </div>
 
-                  {renderDeviceDetails(device)}
-                </div>
-              </div>
+                  <div className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor={`equipamento-${device.id}`}>
+                        Tipo de Equipamento
+                      </Label>
+                      <Select
+                        id={`equipamento-${device.id}`}
+                        value={device.type}
+                        onChange={(e) =>
+                          handleTypeChange(device.id, e.target.value)
+                        }
+                        required
+                      >
+                        <option value="">Selecione</option>
+                        <option value="aparelho celular">Celular</option>
+                        <option value="notebook">Notebook</option>
+                        <option value="chip">Chip</option>
+                        <option value="monitor">Monitor</option>
+                      </Select>
+                    </div>
+
+                    {renderDeviceDetails(device)}
+                  </div>
+                </CardContent>
+              </Card>
             ))}
-          </div>
 
-          <div className="mt-6">
-            <button
-              type="button"
-              onClick={addDevice}
-              className="px-6 py-3 bg-success text-success-foreground rounded-md hover:bg-success/80 transition-colors font-medium"
-            >
-              + Adicionar Equipamento
-            </button>
-          </div>
-        </div>
+            <div>
+              <Button
+                type="button"
+                onClick={addDevice}
+                variant="success"
+                className="w-full md:w-auto"
+              >
+                + Adicionar Equipamento
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
 
-        <div className="pt-6 border-t border-border">
-          <button
-            type="submit"
-            className="w-full md:w-auto px-8 py-3 bg-primary text-primary-foreground rounded-md hover:bg-primary-hover transition-colors font-medium shadow-medium"
-          >
-            Salvar Termo
-          </button>
+        <div className="flex justify-end pt-6">
+          <Button variant="cosmo" size="lg" className="gap-2 px-8">
+            <Save className="w-5 h-5" />
+            Salvar Termo de Responsabilidade
+          </Button>
         </div>
       </form>
     </div>
