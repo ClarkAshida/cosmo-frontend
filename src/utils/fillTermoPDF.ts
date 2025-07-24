@@ -2,6 +2,7 @@ import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import { type TDocumentDefinitions } from "pdfmake/interfaces";
 import { logoBase64 } from "./logoBase64"; // Import your logo base64 string
+import type { TermoData, DeviceFields } from "../types/termsTypes";
 
 pdfMake.vfs = pdfFonts.vfs;
 
@@ -18,8 +19,134 @@ interface DadosColaborador {
   local: string;
 }
 
-export const fillTermoPDF = (
-  equipamentos: Equipamento[] = [
+// Função para formatar a data atual
+const formatarDataAtual = (): string => {
+  const data = new Date();
+  const dia = data.getDate();
+  const meses = [
+    "janeiro",
+    "fevereiro",
+    "março",
+    "abril",
+    "maio",
+    "junho",
+    "julho",
+    "agosto",
+    "setembro",
+    "outubro",
+    "novembro",
+    "dezembro",
+  ];
+  const mes = meses[data.getMonth()];
+  const ano = data.getFullYear();
+
+  return `${dia} de ${mes} de ${ano}`;
+};
+
+// Função para formatar valor como moeda brasileira
+const formatarValorMonetario = (valor: string | undefined): string => {
+  if (!valor || valor.trim() === "") return "";
+
+  const valorNumerico = parseFloat(
+    valor.replace(/[^\d.,]/g, "").replace(",", ".")
+  );
+  if (isNaN(valorNumerico)) return "";
+
+  return `R$ ${valorNumerico.toLocaleString("pt-BR", {
+    minimumFractionDigits: 2,
+  })}`;
+};
+
+// Função para converter dispositivos do formulário para equipamentos do PDF
+const converterDispositivosParaEquipamentos = (
+  dispositivos: DeviceFields[]
+): Equipamento[] => {
+  return dispositivos.map((dispositivo) => {
+    let informacoes = "";
+    let valor = "";
+
+    // Processar informações baseadas no tipo de dispositivo
+    switch (dispositivo.type.toLowerCase().replace("01 ", "")) {
+      case "aparelho celular": {
+        // Mapear modelos para nomes completos
+        const modeloMap: { [key: string]: string } = {
+          motorolag54: "MOTOROLA G54 5G",
+          motorolag53: "MOTOROLA G53 5G",
+          motorolag22: "MOTOROLA G22",
+          outro: dispositivo.details.modeloOutro?.toUpperCase() || "N/A",
+        };
+
+        const modelo =
+          modeloMap[dispositivo.details.modelo || ""] ||
+          dispositivo.details.modelo?.toUpperCase() ||
+          "N/A";
+        informacoes = `MODELO: ${modelo}\nIMEI: ${
+          dispositivo.details.imei || "N/A"
+        }\nNOTA: ${dispositivo.details.notaFiscal || "N/A"}`;
+
+        // Para celulares, usar valores pré-definidos baseados no modelo ou o valor customizado
+        let valorFinal = "";
+        if (dispositivo.details.modelo === "motorolag54") {
+          valorFinal = "2540";
+        } else if (dispositivo.details.modelo === "motorolag53") {
+          valorFinal = "2150";
+        } else if (dispositivo.details.modelo === "motorolag22") {
+          valorFinal = "1750";
+        } else {
+          valorFinal = dispositivo.details.valor || "";
+        }
+
+        valor = formatarValorMonetario(valorFinal);
+        break;
+      }
+
+      case "notebook": {
+        informacoes = `MODELO: ${(
+          dispositivo.details.modelo || "N/A"
+        ).toUpperCase()}\nTAG: ${dispositivo.details.tag || "N/A"}\nNOTA: ${
+          dispositivo.details.notaFiscal || "N/A"
+        }`;
+        valor = formatarValorMonetario(dispositivo.details.valor);
+        break;
+      }
+
+      case "chip": {
+        informacoes = `NÚMERO: ${dispositivo.details.numero || "N/A"}\nNOTA: ${
+          dispositivo.details.notaFiscal || "N/A"
+        }`;
+        valor = formatarValorMonetario(dispositivo.details.valor);
+        break;
+      }
+
+      case "monitor": {
+        informacoes = `MARCA: ${(
+          dispositivo.details.marca || "N/A"
+        ).toUpperCase()}\nTAG: ${
+          dispositivo.details.tag || "N/A"
+        }\nPATRIMÔNIO: ${dispositivo.details.patrimonio || "N/A"}\nNOTA: ${
+          dispositivo.details.notaFiscal || "N/A"
+        }`;
+        valor = formatarValorMonetario(dispositivo.details.valor);
+        break;
+      }
+
+      default: {
+        informacoes = "N/A";
+        valor = "";
+      }
+    }
+
+    return {
+      nome: dispositivo.type.toUpperCase(),
+      valor,
+      informacoes,
+    };
+  });
+};
+
+export const fillTermoPDF = (termoData?: TermoData) => {
+  // Dados padrão para fallback
+  const equipamentosDefault: Equipamento[] = [
     {
       nome: "01 NOTEBOOK",
       valor: "R$ 4.156,29",
@@ -30,14 +157,28 @@ export const fillTermoPDF = (
       valor: "",
       informacoes: "SIM",
     },
-  ],
-  dadosColaborador: DadosColaborador = {
+  ];
+
+  const dadosColaboradorDefault: DadosColaborador = {
     nome: "Morgan Marcelo Viana de Oliveira",
     cpf: "705.635.104-20",
-    data: "16 de julho de 2025",
+    data: formatarDataAtual(),
     local: "Natal",
-  }
-) => {
+  };
+
+  // Usar dados do formulário se fornecidos, caso contrário usar padrão
+  const equipamentos = termoData
+    ? converterDispositivosParaEquipamentos(termoData.dispositivos)
+    : equipamentosDefault;
+
+  const dadosColaborador: DadosColaborador = termoData
+    ? {
+        nome: termoData.colaborador.nome,
+        cpf: termoData.colaborador.cpf,
+        data: formatarDataAtual(),
+        local: termoData.colaborador.cidade,
+      }
+    : dadosColaboradorDefault;
   const docDefinition: TDocumentDefinitions = {
     pageSize: "A4",
     pageMargins: [26, 26, 26, 26],
@@ -220,7 +361,7 @@ export const fillTermoPDF = (
               {
                 image: logoBase64,
                 width: 120,
-                height: 30,
+                height: 35,
                 alignment: "center",
                 border: [true, true, true, true],
                 margin: [0, 15, 0, 0],
@@ -231,7 +372,7 @@ export const fillTermoPDF = (
                     text: "Termo de Entrega de Equipamentos de TI",
                     style: "headerTitle",
                     alignment: "center",
-                    margin: [0, 0, 6, 0],
+                    margin: [0, 6, 0, -6],
                   },
                   {
                     text: "________________________________________________________________________",

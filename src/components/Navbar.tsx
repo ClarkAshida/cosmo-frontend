@@ -4,7 +4,7 @@ import {
   Home,
   FileText,
   Monitor,
-  Plus,
+  // Plus,
   User,
   LogIn,
   LogOut,
@@ -36,16 +36,16 @@ const Navbar = () => {
       label: "Criar Termo",
       icon: FileText,
     },
-    {
-      href: "/equipamentos",
-      label: "Visualizar Equipamentos",
-      icon: Monitor,
-    },
-    {
-      href: "/adicionar-equipamento",
-      label: "Adicionar Equipamento",
-      icon: Plus,
-    },
+    // {
+    //   href: "/equipamentos",
+    //   label: "Visualizar Equipamentos",
+    //   icon: Monitor,
+    // },
+    // {
+    //   href: "/adicionar-equipamento",
+    //   label: "Adicionar Equipamento",
+    //   icon: Plus,
+    // },
   ];
 
   const handleLogin = () => {

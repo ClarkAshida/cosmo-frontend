@@ -97,7 +97,7 @@ const CreateTermForm: React.FC = () => {
     console.log("Dados do termo com prefixos e agregados:", termoData);
 
     try {
-      await fillTermoPDF();
+      await fillTermoPDF(termoData); // Passar os dados do formulário
     } catch (error) {
       console.error("Erro ao gerar PDF:", error);
     }

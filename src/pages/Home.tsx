@@ -2,7 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { FileText, Monitor, Plus, BarChart3 } from "lucide-react";
+import { FileText } from "lucide-react";
 
 const Home: React.FC = () => {
   const quickActions = [
@@ -13,20 +13,20 @@ const Home: React.FC = () => {
       icon: FileText,
       color: "bg-primary hover:bg-primary-hover",
     },
-    {
-      title: "Visualizar Equipamentos",
-      description: "Consulte todos os equipamentos cadastrados no sistema",
-      href: "/equipamentos",
-      icon: Monitor,
-      color: "bg-secondary hover:bg-secondary/80",
-    },
-    {
-      title: "Adicionar Equipamento",
-      description: "Cadastre um novo equipamento no inventário",
-      href: "/adicionar-equipamento",
-      icon: Plus,
-      color: "bg-success hover:bg-success/80",
-    },
+    // {
+    //   title: "Visualizar Equipamentos",
+    //   description: "Consulte todos os equipamentos cadastrados no sistema",
+    //   href: "/equipamentos",
+    //   icon: Monitor,
+    //   color: "bg-secondary hover:bg-secondary/80",
+    // },
+    // {
+    //   title: "Adicionar Equipamento",
+    //   description: "Cadastre um novo equipamento no inventário",
+    //   href: "/adicionar-equipamento",
+    //   icon: Plus,
+    //   color: "bg-success hover:bg-success/80",
+    // },
   ];
 
   return (
@@ -76,7 +76,7 @@ const Home: React.FC = () => {
           })}
         </div>
 
-        <Card className="max-w-4xl mx-auto">
+        {/* <Card className="max-w-4xl mx-auto">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <BarChart3 className="w-5 h-5" />
@@ -107,7 +107,7 @@ const Home: React.FC = () => {
               </div>
             </div>
           </CardContent>
-        </Card>
+        </Card> */}
       </div>
     </div>
   );
