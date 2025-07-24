@@ -531,5 +531,11 @@ export const fillTermoPDF = (termoData?: TermoData) => {
     },
   };
 
-  pdfMake.createPdf(docDefinition).download("termo-de-responsabilidade.pdf");
+  const nomeArquivo = termoData?.colaborador.nome
+    ? `termo-de-responsabilidade-${termoData.colaborador.nome
+        .replace(/\s+/g, "-")
+        .toLowerCase()}.pdf`
+    : "termo-de-responsabilidade.pdf";
+
+  pdfMake.createPdf(docDefinition).download(nomeArquivo);
 };
