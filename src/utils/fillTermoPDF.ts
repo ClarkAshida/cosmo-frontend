@@ -1,6 +1,7 @@
 import pdfMake from "pdfmake/build/pdfmake";
 import pdfFonts from "pdfmake/build/vfs_fonts";
 import { type TDocumentDefinitions } from "pdfmake/interfaces";
+import { logoBase64 } from "./logoBase64"; // Import your logo base64 string
 
 pdfMake.vfs = pdfFonts.vfs;
 
@@ -40,6 +41,9 @@ export const fillTermoPDF = (
   const docDefinition: TDocumentDefinitions = {
     pageSize: "A4",
     pageMargins: [26, 26, 26, 26],
+    defaultStyle: {
+      fontSize: 12,
+    },
     content: [
       // Borda ao redor do documento - Primeira página
       {
@@ -63,10 +67,12 @@ export const fillTermoPDF = (
           body: [
             [
               {
-                text: "",
+                image: logoBase64,
+                width: 120,
+                height: 35,
+                alignment: "center",
                 border: [true, true, true, true],
-                margin: [0, 0, 0, 0],
-                minHeight: 60,
+                margin: [0, 15, 0, 0],
               },
               {
                 stack: [
@@ -74,7 +80,7 @@ export const fillTermoPDF = (
                     text: "Termo de Entrega de Equipamentos de TI",
                     style: "headerTitle",
                     alignment: "center",
-                    margin: [0, 0, 6, 0],
+                    margin: [0, 6, 0, -6],
                   },
                   {
                     text: "________________________________________________________________________",
@@ -212,10 +218,12 @@ export const fillTermoPDF = (
           body: [
             [
               {
-                text: "",
+                image: logoBase64,
+                width: 120,
+                height: 30,
+                alignment: "center",
                 border: [true, true, true, true],
-                margin: [0, 0, 0, 0],
-                minHeight: 60,
+                margin: [0, 15, 0, 0],
               },
               {
                 stack: [
@@ -223,7 +231,7 @@ export const fillTermoPDF = (
                     text: "Termo de Entrega de Equipamentos de TI",
                     style: "headerTitle",
                     alignment: "center",
-                    margin: [0, 6, 0, 0],
+                    margin: [0, 0, 6, 0],
                   },
                   {
                     text: "________________________________________________________________________",
@@ -316,7 +324,10 @@ export const fillTermoPDF = (
 
       // Dados do colaborador
       {
-        text: `Nome do Colaborador (a): ${dadosColaborador.nome}`,
+        text: [
+          { text: "Nome do Colaborador (a):", bold: true },
+          { text: ` ${dadosColaborador.nome}` },
+        ],
         margin: [30, 0, 30, 15],
         fontSize: 12,
       },
