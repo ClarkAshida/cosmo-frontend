@@ -16,3 +16,15 @@ export {
   CardHeader,
   CardTitle,
 } from "./card";
+export {
+  Table,
+  TableHeader,
+  TableBody,
+  TableFooter,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableCaption,
+} from "./table";
+export { ChartContainer } from "./chart";
+export { default as Tooltip } from "./tooltip";
