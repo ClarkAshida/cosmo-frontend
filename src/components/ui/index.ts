@@ -28,3 +28,12 @@ export {
 } from "./table";
 export { ChartContainer } from "./chart";
 export { default as Tooltip } from "./tooltip";
+export {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "./pagination";

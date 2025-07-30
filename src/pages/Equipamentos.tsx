@@ -1,8 +1,31 @@
-import { useState } from "react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
+import { useState, useEffect } from "react";
+import {
+  Button,
+  Input,
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+  Label,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+  Table,
+  TableHeader,
+  TableBody,
+  TableHead,
+  TableRow,
+  TableCell,
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui";
 import {
   Monitor,
   Smartphone,
@@ -10,172 +33,644 @@ import {
   CreditCard,
   Search,
   Filter,
+  Plus,
+  Edit,
+  Eye,
+  Package,
+  Wrench,
+  RotateCcw,
+  CheckCircle,
+  Clock,
+  AlertTriangle,
+  MoreHorizontal,
 } from "lucide-react";
+
+// Tipos para definir os status e tipos de equipamento
+type StatusEquipamento = "DISPONIVEL" | "EM_USO" | "EM_MANUTENCAO" | "INATIVO";
+type TipoEquipamento = "NOTEBOOK" | "CELULAR" | "MONITOR" | "CHIP" | "OUTROS";
+
+interface Equipamento {
+  id: number;
+  patrimonio?: string;
+  serial?: string;
+  hostname?: string;
+  tipo: TipoEquipamento;
+  modelo: string;
+  status: StatusEquipamento;
+  usuarioAtual?: string;
+  valor: string;
+  dataAquisicao: string;
+}
 
 const Equipamentos = () => {
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState<string>("TODOS");
+  const [tipoFilter, setTipoFilter] = useState<string>("TODOS");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10);
 
-  // Dados simulados de equipamentos
-  const equipamentos = [
+  // Dados simulados mais realistas com mais itens para testar paginação
+  const equipamentos: Equipamento[] = [
     {
       id: 1,
-      tipo: "Celular",
-      modelo: "Motorola G54 5G",
-      imei: "123456789012345",
-      responsavel: "João Silva",
-      valor: "R$ 2.540,00",
-      status: "Ativo",
-      icon: Smartphone,
+      patrimonio: "NB001",
+      serial: "ABC123456789",
+      hostname: "NB-JOAO-001",
+      tipo: "NOTEBOOK",
+      modelo: "Dell Inspiron 15 3000",
+      status: "EM_USO",
+      usuarioAtual: "João Silva",
+      valor: "R$ 3.200,00",
+      dataAquisicao: "2023-01-15",
     },
     {
       id: 2,
-      tipo: "Notebook",
-      modelo: "Dell Inspiron 15",
-      tag: "NB001",
-      responsavel: "Maria Santos",
-      valor: "R$ 3.200,00",
-      status: "Ativo",
-      icon: Laptop,
+      patrimonio: "CEL001",
+      serial: "IMEI123456789012345",
+      tipo: "CELULAR",
+      modelo: "Motorola G54 5G",
+      status: "DISPONIVEL",
+      valor: "R$ 2.540,00",
+      dataAquisicao: "2023-03-10",
     },
     {
       id: 3,
-      tipo: "Monitor",
-      modelo: "Samsung 24'",
       patrimonio: "MON001",
-      responsavel: "Carlos Lima",
+      serial: "MON789456123",
+      tipo: "MONITOR",
+      modelo: "Samsung 24' Full HD",
+      status: "EM_USO",
+      usuarioAtual: "Maria Santos",
       valor: "R$ 800,00",
-      status: "Ativo",
-      icon: Monitor,
+      dataAquisicao: "2023-02-20",
     },
     {
       id: 4,
-      tipo: "Chip",
-      numero: "11999887766",
-      responsavel: "Ana Costa",
+      patrimonio: "CHIP001",
+      serial: "11999887766",
+      tipo: "CHIP",
+      modelo: "Claro Controle",
+      status: "EM_MANUTENCAO",
       valor: "R$ 50,00",
-      status: "Ativo",
-      icon: CreditCard,
+      dataAquisicao: "2023-01-05",
+    },
+    {
+      id: 5,
+      patrimonio: "NB002",
+      serial: "DEF987654321",
+      hostname: "NB-CARLOS-002",
+      tipo: "NOTEBOOK",
+      modelo: "HP Pavilion 14",
+      status: "DISPONIVEL",
+      valor: "R$ 2.800,00",
+      dataAquisicao: "2023-04-01",
+    },
+    {
+      id: 6,
+      patrimonio: "CEL002",
+      serial: "IMEI987654321098765",
+      tipo: "CELULAR",
+      modelo: "Samsung Galaxy A54",
+      status: "EM_USO",
+      usuarioAtual: "Pedro Oliveira",
+      valor: "R$ 1.999,00",
+      dataAquisicao: "2023-05-12",
+    },
+    {
+      id: 7,
+      patrimonio: "MON002",
+      serial: "MON456789012",
+      tipo: "MONITOR",
+      modelo: "LG 27' 4K",
+      status: "DISPONIVEL",
+      valor: "R$ 1.200,00",
+      dataAquisicao: "2023-06-08",
+    },
+    {
+      id: 8,
+      patrimonio: "NB003",
+      serial: "GHI456789012",
+      hostname: "NB-ANA-003",
+      tipo: "NOTEBOOK",
+      modelo: "Lenovo ThinkPad E14",
+      status: "EM_USO",
+      usuarioAtual: "Ana Costa",
+      valor: "R$ 3.500,00",
+      dataAquisicao: "2023-07-20",
+    },
+    {
+      id: 9,
+      patrimonio: "CHIP002",
+      serial: "11988776655",
+      tipo: "CHIP",
+      modelo: "Vivo Pós",
+      status: "DISPONIVEL",
+      valor: "R$ 60,00",
+      dataAquisicao: "2023-08-15",
+    },
+    {
+      id: 10,
+      patrimonio: "CEL003",
+      serial: "IMEI555444333222111",
+      tipo: "CELULAR",
+      modelo: "iPhone 14",
+      status: "EM_MANUTENCAO",
+      valor: "R$ 5.200,00",
+      dataAquisicao: "2023-09-10",
+    },
+    {
+      id: 11,
+      patrimonio: "NB004",
+      serial: "JKL789012345",
+      hostname: "NB-LUCAS-004",
+      tipo: "NOTEBOOK",
+      modelo: "Acer Aspire 5",
+      status: "DISPONIVEL",
+      valor: "R$ 2.400,00",
+      dataAquisicao: "2023-10-05",
+    },
+    {
+      id: 12,
+      patrimonio: "MON003",
+      serial: "MON123789456",
+      tipo: "MONITOR",
+      modelo: "Dell 22' Full HD",
+      status: "EM_USO",
+      usuarioAtual: "Rafael Mendes",
+      valor: "R$ 650,00",
+      dataAquisicao: "2023-11-12",
+    },
+    {
+      id: 13,
+      patrimonio: "CEL004",
+      serial: "IMEI111222333444555",
+      tipo: "CELULAR",
+      modelo: "Xiaomi Redmi Note 12",
+      status: "DISPONIVEL",
+      valor: "R$ 1.200,00",
+      dataAquisicao: "2023-12-01",
+    },
+    {
+      id: 14,
+      patrimonio: "NB005",
+      serial: "MNO012345678",
+      hostname: "NB-FERNANDA-005",
+      tipo: "NOTEBOOK",
+      modelo: "Asus VivoBook 15",
+      status: "EM_USO",
+      usuarioAtual: "Fernanda Lima",
+      valor: "R$ 2.600,00",
+      dataAquisicao: "2024-01-18",
+    },
+    {
+      id: 15,
+      patrimonio: "CHIP003",
+      serial: "11977665544",
+      tipo: "CHIP",
+      modelo: "TIM Controle",
+      status: "INATIVO",
+      valor: "R$ 45,00",
+      dataAquisicao: "2024-02-10",
     },
   ];
 
-  const filteredEquipamentos = equipamentos.filter(
-    (equip) =>
-      (equip.modelo?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
-      (equip.responsavel?.toLowerCase() || "").includes(
+  // Funções para obter ícones e cores baseados no tipo
+  const getTipoIcon = (tipo: TipoEquipamento) => {
+    switch (tipo) {
+      case "NOTEBOOK":
+        return Laptop;
+      case "CELULAR":
+        return Smartphone;
+      case "MONITOR":
+        return Monitor;
+      case "CHIP":
+        return CreditCard;
+      default:
+        return Package;
+    }
+  };
+
+  // Função para obter badge de status com cores
+  const getStatusBadge = (status: StatusEquipamento) => {
+    const baseClasses =
+      "inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium gap-1";
+
+    switch (status) {
+      case "DISPONIVEL":
+        return {
+          classes: `${baseClasses} bg-success/10 text-success border border-success/20`,
+          icon: CheckCircle,
+          label: "Disponível",
+        };
+      case "EM_USO":
+        return {
+          classes: `${baseClasses} bg-primary/10 text-primary border border-primary/20`,
+          icon: Clock,
+          label: "Em Uso",
+        };
+      case "EM_MANUTENCAO":
+        return {
+          classes: `${baseClasses} bg-warning/10 text-warning border border-warning/20`,
+          icon: Wrench,
+          label: "Em Manutenção",
+        };
+      case "INATIVO":
+        return {
+          classes: `${baseClasses} bg-danger/10 text-danger border border-danger/20`,
+          icon: AlertTriangle,
+          label: "Inativo",
+        };
+      default:
+        return {
+          classes: `${baseClasses} bg-muted text-muted-foreground`,
+          icon: MoreHorizontal,
+          label: status,
+        };
+    }
+  };
+
+  // Função para obter ação contextual baseada no status
+  const getContextualAction = (equipamento: Equipamento) => {
+    switch (equipamento.status) {
+      case "DISPONIVEL":
+        return {
+          label: "Entregar",
+          variant: "default" as const,
+          icon: Package,
+          action: () =>
+            console.log(`Entregar equipamento ${equipamento.patrimonio}`),
+        };
+      case "EM_USO":
+        return {
+          label: "Devolver",
+          variant: "secondary" as const,
+          icon: RotateCcw,
+          action: () =>
+            console.log(`Devolver equipamento ${equipamento.patrimonio}`),
+        };
+      case "EM_MANUTENCAO":
+        return {
+          label: "Marcar Disponível",
+          variant: "outline" as const,
+          icon: CheckCircle,
+          action: () =>
+            console.log(`Marcar como disponível ${equipamento.patrimonio}`),
+        };
+      default:
+        return null;
+    }
+  };
+
+  // Filtros aplicados
+  const filteredEquipamentos = equipamentos.filter((equip) => {
+    const matchesSearch =
+      (equip.patrimonio?.toLowerCase() || "").includes(
         searchTerm.toLowerCase()
       ) ||
-      (equip.tipo?.toLowerCase() || "").includes(searchTerm.toLowerCase())
-  );
+      (equip.serial?.toLowerCase() || "").includes(searchTerm.toLowerCase()) ||
+      (equip.hostname?.toLowerCase() || "").includes(
+        searchTerm.toLowerCase()
+      ) ||
+      (equip.modelo?.toLowerCase() || "").includes(searchTerm.toLowerCase());
+
+    const matchesStatus =
+      statusFilter === "TODOS" || equip.status === statusFilter;
+    const matchesTipo = tipoFilter === "TODOS" || equip.tipo === tipoFilter;
+
+    return matchesSearch && matchesStatus && matchesTipo;
+  });
+
+  // Cálculos de paginação
+  const totalItems = filteredEquipamentos.length;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
+  const currentItems = filteredEquipamentos.slice(startIndex, endIndex);
+
+  // Reset da página atual quando filtros mudam
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter, tipoFilter]);
+
+  // Função para gerar números das páginas a serem exibidas
+  const getPageNumbers = () => {
+    const delta = 2; // Quantas páginas mostrar antes e depois da atual
+    const range = [];
+    const rangeWithDots = [];
+
+    for (
+      let i = Math.max(2, currentPage - delta);
+      i <= Math.min(totalPages - 1, currentPage + delta);
+      i++
+    ) {
+      range.push(i);
+    }
+
+    if (currentPage - delta > 2) {
+      rangeWithDots.push(1, "...");
+    } else {
+      rangeWithDots.push(1);
+    }
+
+    rangeWithDots.push(...range);
+
+    if (currentPage + delta < totalPages - 1) {
+      rangeWithDots.push("...", totalPages);
+    } else if (totalPages > 1) {
+      rangeWithDots.push(totalPages);
+    }
+
+    return rangeWithDots;
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-light">
-      <div className="container mx-auto px-6 py-12">
-        <div className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold text-primary mb-4">
-            Equipamentos
-          </h1>
-          <p className="text-lg text-muted-foreground">
-            Visualize e gerencie todos os equipamentos do sistema
+    <div className="space-y-6">
+      {/* Header da página */}
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+        <div>
+          <h1 className="text-3xl font-bold text-foreground">Equipamentos</h1>
+          <p className="text-muted-foreground">
+            Gerencie o inventário completo de ativos de TI
           </p>
         </div>
+        <Button className="gap-2">
+          <Plus className="w-4 h-4" />
+          Novo Equipamento
+        </Button>
+      </div>
 
-        <Card className="mb-6">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Filter className="w-5 h-5" />
-              Filtros
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex gap-4">
-              <div className="flex-1">
-                <Label htmlFor="search">Buscar equipamentos</Label>
-                <div className="flex gap-2 mt-2">
-                  <Input
-                    id="search"
-                    placeholder="Buscar por modelo, responsável ou tipo..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                  />
-                  <Button variant="outline" size="icon">
-                    <Search className="w-4 h-4" />
-                  </Button>
-                </div>
+      {/* FilterBar e SearchBar */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Filter className="w-5 h-5" />
+            Filtros e Busca
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            {/* Campo de busca */}
+            <div className="md:col-span-2">
+              <Label htmlFor="search">Buscar equipamentos</Label>
+              <div className="flex gap-2 mt-2">
+                <Input
+                  id="search"
+                  placeholder="Patrimônio, serial, hostname..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="flex-1"
+                />
+                <Button variant="outline" size="icon">
+                  <Search className="w-4 h-4" />
+                </Button>
               </div>
             </div>
-          </CardContent>
-        </Card>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredEquipamentos.map((equip) => {
-            const Icon = equip.icon;
-            return (
-              <Card
-                key={equip.id}
-                className="hover:shadow-medium transition-shadow"
+            {/* Filtro por Status */}
+            <div>
+              <Label htmlFor="status-filter">Status</Label>
+              <Select value={statusFilter} onValueChange={setStatusFilter}>
+                <SelectTrigger className="mt-2">
+                  <SelectValue placeholder="Todos os status" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="TODOS">Todos</SelectItem>
+                  <SelectItem value="DISPONIVEL">Disponível</SelectItem>
+                  <SelectItem value="EM_USO">Em Uso</SelectItem>
+                  <SelectItem value="EM_MANUTENCAO">Em Manutenção</SelectItem>
+                  <SelectItem value="INATIVO">Inativo</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            {/* Filtro por Tipo */}
+            <div>
+              <Label htmlFor="tipo-filter">Tipo</Label>
+              <Select value={tipoFilter} onValueChange={setTipoFilter}>
+                <SelectTrigger className="mt-2">
+                  <SelectValue placeholder="Todos os tipos" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="TODOS">Todos</SelectItem>
+                  <SelectItem value="NOTEBOOK">Notebook</SelectItem>
+                  <SelectItem value="CELULAR">Celular</SelectItem>
+                  <SelectItem value="MONITOR">Monitor</SelectItem>
+                  <SelectItem value="CHIP">Chip</SelectItem>
+                  <SelectItem value="OUTROS">Outros</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* DataTable principal */}
+      <Card>
+        <CardHeader>
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <CardTitle>
+              Inventário de Equipamentos ({totalItems} itens)
+            </CardTitle>
+            <div className="flex items-center gap-2">
+              <Label htmlFor="items-per-page" className="text-sm">
+                Itens por página:
+              </Label>
+              <Select
+                value={itemsPerPage.toString()}
+                onValueChange={(value) => {
+                  setItemsPerPage(Number(value));
+                  setCurrentPage(1);
+                }}
               >
-                <CardHeader className="pb-3">
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <Icon className="w-5 h-5 text-primary" />
-                    {equip.tipo}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  <div>
-                    <p className="font-semibold text-foreground">
-                      {equip.modelo}
-                    </p>
-                    <p className="text-sm text-muted-foreground">
-                      {equip.imei && `IMEI: ${equip.imei}`}
-                      {equip.tag && `TAG: ${equip.tag}`}
-                      {equip.patrimonio && `Patrimônio: ${equip.patrimonio}`}
-                      {equip.numero && `Número: ${equip.numero}`}
-                    </p>
-                  </div>
+                <SelectTrigger className="w-20">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5">5</SelectItem>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="20">20</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+        </CardHeader>
+        <CardContent>
+          <div className="rounded-md border">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-12">Tipo</TableHead>
+                  <TableHead>Patrimônio</TableHead>
+                  <TableHead>Modelo</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead>Usuário Atual</TableHead>
+                  <TableHead>Valor</TableHead>
+                  <TableHead className="text-right">Ações</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {currentItems.map((equip) => {
+                  const TipoIcon = getTipoIcon(equip.tipo);
+                  const statusBadge = getStatusBadge(equip.status);
+                  const StatusIcon = statusBadge.icon;
+                  const contextualAction = getContextualAction(equip);
 
-                  <div className="border-t pt-3">
-                    <p className="text-sm">
-                      <span className="font-medium">Responsável:</span>{" "}
-                      {equip.responsavel}
-                    </p>
-                    <p className="text-sm">
-                      <span className="font-medium">Valor:</span> {equip.valor}
-                    </p>
-                    <p className="text-sm">
-                      <span className="font-medium">Status:</span>
-                      <span className="ml-1 inline-block w-2 h-2 bg-success rounded-full"></span>
-                      <span className="ml-1 text-success">{equip.status}</span>
-                    </p>
-                  </div>
+                  return (
+                    <TableRow key={equip.id}>
+                      <TableCell>
+                        <div className="flex items-center justify-center w-8 h-8 rounded-lg bg-accent/50">
+                          <TipoIcon className="w-4 h-4 text-primary" />
+                        </div>
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        <div>
+                          <div className="font-semibold">
+                            {equip.patrimonio}
+                          </div>
+                          {equip.hostname && (
+                            <div className="text-xs text-muted-foreground">
+                              {equip.hostname}
+                            </div>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <div>
+                          <div className="font-medium">{equip.modelo}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {equip.serial}
+                          </div>
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <span className={statusBadge.classes}>
+                          <StatusIcon className="w-3 h-3" />
+                          {statusBadge.label}
+                        </span>
+                      </TableCell>
+                      <TableCell>
+                        {equip.usuarioAtual ? (
+                          <div className="font-medium text-foreground">
+                            {equip.usuarioAtual}
+                          </div>
+                        ) : (
+                          <span className="text-muted-foreground text-sm">
+                            Não atribuído
+                          </span>
+                        )}
+                      </TableCell>
+                      <TableCell className="font-medium">
+                        {equip.valor}
+                      </TableCell>
+                      <TableCell>
+                        <div className="flex items-center justify-end gap-2">
+                          <Button variant="ghost" size="sm">
+                            <Eye className="w-4 h-4" />
+                          </Button>
+                          <Button variant="ghost" size="sm">
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          {contextualAction && (
+                            <Button
+                              variant={contextualAction.variant}
+                              size="sm"
+                              onClick={contextualAction.action}
+                              className="gap-1"
+                            >
+                              <contextualAction.icon className="w-4 h-4" />
+                              {contextualAction.label}
+                            </Button>
+                          )}
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
+              </TableBody>
+            </Table>
+          </div>
 
-                  <div className="flex gap-2 pt-3">
-                    <Button variant="outline" size="sm" className="flex-1">
-                      Editar
-                    </Button>
-                    <Button variant="outline" size="sm" className="flex-1">
-                      Detalhes
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            );
-          })}
-        </div>
+          {/* Componente de Paginação */}
+          {totalPages > 1 && (
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mt-6">
+              <div className="text-sm text-muted-foreground">
+                Mostrando {startIndex + 1} a {Math.min(endIndex, totalItems)} de{" "}
+                {totalItems} equipamentos
+              </div>
 
-        {filteredEquipamentos.length === 0 && (
-          <Card className="text-center py-12">
-            <CardContent>
-              <Monitor className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
+              <Pagination>
+                <PaginationContent>
+                  <PaginationItem>
+                    <PaginationPrevious
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (currentPage > 1) setCurrentPage(currentPage - 1);
+                      }}
+                      className={
+                        currentPage <= 1 ? "pointer-events-none opacity-50" : ""
+                      }
+                    />
+                  </PaginationItem>
+
+                  {getPageNumbers().map((pageNumber, index) => (
+                    <PaginationItem key={index}>
+                      {pageNumber === "..." ? (
+                        <PaginationEllipsis />
+                      ) : (
+                        <PaginationLink
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setCurrentPage(Number(pageNumber));
+                          }}
+                          isActive={currentPage === pageNumber}
+                        >
+                          {pageNumber}
+                        </PaginationLink>
+                      )}
+                    </PaginationItem>
+                  ))}
+
+                  <PaginationItem>
+                    <PaginationNext
+                      href="#"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        if (currentPage < totalPages)
+                          setCurrentPage(currentPage + 1);
+                      }}
+                      className={
+                        currentPage >= totalPages
+                          ? "pointer-events-none opacity-50"
+                          : ""
+                      }
+                    />
+                  </PaginationItem>
+                </PaginationContent>
+              </Pagination>
+            </div>
+          )}
+
+          {/* Estado vazio */}
+          {filteredEquipamentos.length === 0 && (
+            <div className="text-center py-12">
+              <Package className="w-16 h-16 text-muted-foreground mx-auto mb-4" />
               <h3 className="text-lg font-semibold text-foreground mb-2">
                 Nenhum equipamento encontrado
               </h3>
-              <p className="text-muted-foreground">
+              <p className="text-muted-foreground mb-4">
                 Tente ajustar os filtros ou adicionar novos equipamentos.
               </p>
-            </CardContent>
-          </Card>
-        )}
-      </div>
+              <Button className="gap-2">
+                <Plus className="w-4 h-4" />
+                Cadastrar Primeiro Equipamento
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
