@@ -25,6 +25,12 @@ import {
   PaginationLink,
   PaginationNext,
   PaginationPrevious,
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
 } from "@/components/ui";
 import {
   Monitor,
@@ -43,6 +49,10 @@ import {
   Clock,
   AlertTriangle,
   MoreHorizontal,
+  User,
+  FileText,
+  Loader2,
+  X,
 } from "lucide-react";
 
 // Tipos para definir os status e tipos de equipamento
@@ -62,12 +72,92 @@ interface Equipamento {
   dataAquisicao: string;
 }
 
+// Tipos para os modais
+interface Usuario {
+  id: number;
+  nome: string;
+  email: string;
+  departamento: string;
+}
+
+interface FormDataEntrega {
+  usuarioId: string;
+  dataEntrega: string;
+  observacoes: string;
+}
+
+interface FormDataDevolucao {
+  condicaoRetorno: string;
+  novostatus: StatusEquipamento;
+  dataDevolucao: string;
+  observacoes: string;
+}
+
+type ModalType = "none" | "entrega" | "devolucao";
+
 const Equipamentos = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [statusFilter, setStatusFilter] = useState<string>("TODOS");
   const [tipoFilter, setTipoFilter] = useState<string>("TODOS");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
+
+  // Estados para os modais
+  const [modalType, setModalType] = useState<ModalType>("none");
+  const [selectedEquipamento, setSelectedEquipamento] =
+    useState<Equipamento | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  // Estados para formulário de entrega
+  const [formDataEntrega, setFormDataEntrega] = useState<FormDataEntrega>({
+    usuarioId: "",
+    dataEntrega: new Date().toISOString().split("T")[0],
+    observacoes: "",
+  });
+
+  // Estados para formulário de devolução
+  const [formDataDevolucao, setFormDataDevolucao] = useState<FormDataDevolucao>(
+    {
+      condicaoRetorno: "",
+      novostatus: "DISPONIVEL",
+      dataDevolucao: new Date().toISOString().split("T")[0],
+      observacoes: "",
+    }
+  );
+
+  // Dados simulados de usuários
+  const usuarios: Usuario[] = [
+    {
+      id: 1,
+      nome: "João Silva",
+      email: "joao.silva@empresa.com",
+      departamento: "TI",
+    },
+    {
+      id: 2,
+      nome: "Maria Santos",
+      email: "maria.santos@empresa.com",
+      departamento: "RH",
+    },
+    {
+      id: 3,
+      nome: "Pedro Oliveira",
+      email: "pedro.oliveira@empresa.com",
+      departamento: "Comercial",
+    },
+    {
+      id: 4,
+      nome: "Ana Costa",
+      email: "ana.costa@empresa.com",
+      departamento: "Financeiro",
+    },
+    {
+      id: 5,
+      nome: "Carlos Lima",
+      email: "carlos.lima@empresa.com",
+      departamento: "Marketing",
+    },
+  ];
 
   // Dados simulados mais realistas com mais itens para testar paginação
   const equipamentos: Equipamento[] = [
@@ -289,6 +379,133 @@ const Equipamentos = () => {
     }
   };
 
+  // Funções para abrir/fechar modais
+  const openDeliveryModal = (equipamento: Equipamento) => {
+    setSelectedEquipamento(equipamento);
+    setModalType("entrega");
+    setFormDataEntrega({
+      usuarioId: "",
+      dataEntrega: new Date().toISOString().split("T")[0],
+      observacoes: "",
+    });
+  };
+
+  const openReturnModal = (equipamento: Equipamento) => {
+    setSelectedEquipamento(equipamento);
+    setModalType("devolucao");
+    setFormDataDevolucao({
+      condicaoRetorno: "",
+      novostatus: "DISPONIVEL",
+      dataDevolucao: new Date().toISOString().split("T")[0],
+      observacoes: "",
+    });
+  };
+
+  const closeModal = () => {
+    setModalType("none");
+    setSelectedEquipamento(null);
+    setIsLoading(false);
+  };
+
+  // Função para processar entrega
+  const handleEntrega = async () => {
+    if (!selectedEquipamento || !formDataEntrega.usuarioId) return;
+
+    setIsLoading(true);
+
+    try {
+      // Passo 1: Criar Histórico
+      console.log("Passo 1: Criando histórico de entrega...");
+      await fetch("/api/historicos/entregar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          equipamentoId: selectedEquipamento.id,
+          usuarioId: formDataEntrega.usuarioId,
+          dataEntrega: formDataEntrega.dataEntrega,
+          observacoes: formDataEntrega.observacoes,
+        }),
+      });
+
+      // Simulação: sempre sucesso
+      const historico = { id: Math.floor(Math.random() * 1000) };
+
+      // Passo 2: Gerar PDF
+      console.log("Passo 2: Gerando PDF do termo de entrega...");
+      // Aqui seria integrada a biblioteca jsPDF
+      await new Promise((resolve) => setTimeout(resolve, 1000)); // Simular processamento
+
+      // Passo 3: Enviar para assinatura
+      console.log("Passo 3: Enviando para serviço de assinatura...");
+      const signingUrl = `https://d4sign.com.br/sign/${Math.random()
+        .toString(36)
+        .substr(2, 9)}`;
+
+      // Passo 4: Atualizar histórico com URL de assinatura
+      console.log("Passo 4: Atualizando histórico com URL de assinatura...");
+      await fetch(`/api/historicos/${historico.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          signingUrl,
+          statusAssinatura: "PENDENTE",
+        }),
+      });
+
+      // Feedback de sucesso
+      console.log("✅ Equipamento entregue e termo enviado para assinatura!");
+      closeModal();
+    } catch (error) {
+      console.error("Erro no processo de entrega:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Função para processar devolução
+  const handleDevolucao = async () => {
+    if (!selectedEquipamento || !formDataDevolucao.condicaoRetorno) return;
+
+    setIsLoading(true);
+
+    try {
+      // Passo 1: Registrar devolução
+      console.log("Passo 1: Registrando devolução...");
+      await fetch(`/api/historicos/${selectedEquipamento.id}/devolver`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          condicaoRetorno: formDataDevolucao.condicaoRetorno,
+          novoStatus: formDataDevolucao.novostatus,
+          dataDevolucao: formDataDevolucao.dataDevolucao,
+          observacoes: formDataDevolucao.observacoes,
+        }),
+      });
+
+      // Passo 2: Gerar PDF do termo de devolução
+      console.log("Passo 2: Gerando PDF do termo de devolução...");
+      await new Promise((resolve) => setTimeout(resolve, 1000));
+
+      // Passo 3: Enviar para assinatura
+      console.log("Passo 3: Enviando para serviço de assinatura...");
+      const signingUrl = `https://d4sign.com.br/sign/${Math.random()
+        .toString(36)
+        .substr(2, 9)}`;
+      console.log("URL de assinatura gerada:", signingUrl);
+
+      // Passo 4: Atualizar registro
+      console.log("Passo 4: Atualizando registro com URL de assinatura...");
+
+      // Feedback de sucesso
+      console.log("✅ Devolução registrada e termo enviado para assinatura!");
+      closeModal();
+    } catch (error) {
+      console.error("Erro no processo de devolução:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   // Função para obter ação contextual baseada no status
   const getContextualAction = (equipamento: Equipamento) => {
     switch (equipamento.status) {
@@ -297,16 +514,14 @@ const Equipamentos = () => {
           label: "Entregar",
           variant: "default" as const,
           icon: Package,
-          action: () =>
-            console.log(`Entregar equipamento ${equipamento.patrimonio}`),
+          action: () => openDeliveryModal(equipamento),
         };
       case "EM_USO":
         return {
           label: "Devolver",
           variant: "secondary" as const,
           icon: RotateCcw,
-          action: () =>
-            console.log(`Devolver equipamento ${equipamento.patrimonio}`),
+          action: () => openReturnModal(equipamento),
         };
       case "EM_MANUTENCAO":
         return {
@@ -671,6 +886,240 @@ const Equipamentos = () => {
           )}
         </CardContent>
       </Card>
+
+      {/* Modal de Entrega */}
+      <Dialog open={modalType === "entrega"} onOpenChange={() => closeModal()}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Package className="w-5 h-5 text-primary" />
+              Entregar Equipamento
+            </DialogTitle>
+            <DialogDescription>
+              Preencha os dados para registrar a entrega do equipamento{" "}
+              <span className="font-medium">
+                {selectedEquipamento?.patrimonio}
+              </span>
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="usuario">Usuário</Label>
+              <Select
+                value={formDataEntrega.usuarioId}
+                onValueChange={(value) =>
+                  setFormDataEntrega({ ...formDataEntrega, usuarioId: value })
+                }
+              >
+                <SelectTrigger className="mt-2">
+                  <SelectValue placeholder="Selecione o usuário" />
+                </SelectTrigger>
+                <SelectContent>
+                  {usuarios.map((usuario) => (
+                    <SelectItem key={usuario.id} value={usuario.id.toString()}>
+                      <div className="flex items-center gap-2">
+                        <User className="w-4 h-4" />
+                        <div>
+                          <div className="font-medium">{usuario.nome}</div>
+                          <div className="text-xs text-muted-foreground">
+                            {usuario.departamento}
+                          </div>
+                        </div>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="dataEntrega">Data de Entrega</Label>
+              <Input
+                id="dataEntrega"
+                type="date"
+                value={formDataEntrega.dataEntrega}
+                onChange={(e) =>
+                  setFormDataEntrega({
+                    ...formDataEntrega,
+                    dataEntrega: e.target.value,
+                  })
+                }
+                className="mt-2"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="observacoesEntrega">Observações</Label>
+              <Input
+                id="observacoesEntrega"
+                placeholder="Observações sobre a entrega (opcional)"
+                value={formDataEntrega.observacoes}
+                onChange={(e) =>
+                  setFormDataEntrega({
+                    ...formDataEntrega,
+                    observacoes: e.target.value,
+                  })
+                }
+                className="mt-2"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={closeModal} disabled={isLoading}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleEntrega}
+              disabled={!formDataEntrega.usuarioId || isLoading}
+              className="gap-2"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Processando...
+                </>
+              ) : (
+                <>
+                  <FileText className="w-4 h-4" />
+                  Confirmar e Gerar Termo
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Modal de Devolução */}
+      <Dialog
+        open={modalType === "devolucao"}
+        onOpenChange={() => closeModal()}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <RotateCcw className="w-5 h-5 text-secondary-foreground" />
+              Registrar Devolução
+            </DialogTitle>
+            <DialogDescription>
+              Registre a devolução do equipamento{" "}
+              <span className="font-medium">
+                {selectedEquipamento?.patrimonio}
+              </span>{" "}
+              em uso por{" "}
+              <span className="font-medium">
+                {selectedEquipamento?.usuarioAtual}
+              </span>
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="condicaoRetorno">Condição de Retorno</Label>
+              <Select
+                value={formDataDevolucao.condicaoRetorno}
+                onValueChange={(value) => {
+                  let novoStatus: StatusEquipamento = "DISPONIVEL";
+                  if (value === "danificado") novoStatus = "EM_MANUTENCAO";
+                  if (value === "descarte") novoStatus = "INATIVO";
+
+                  setFormDataDevolucao({
+                    ...formDataDevolucao,
+                    condicaoRetorno: value,
+                    novostatus: novoStatus,
+                  });
+                }}
+              >
+                <SelectTrigger className="mt-2">
+                  <SelectValue placeholder="Selecione a condição" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="perfeito">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-success" />
+                      Perfeito estado → Disponível
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="bom">
+                    <div className="flex items-center gap-2">
+                      <CheckCircle className="w-4 h-4 text-primary" />
+                      Bom estado → Disponível
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="danificado">
+                    <div className="flex items-center gap-2">
+                      <Wrench className="w-4 h-4 text-warning" />
+                      Danificado → Manutenção
+                    </div>
+                  </SelectItem>
+                  <SelectItem value="descarte">
+                    <div className="flex items-center gap-2">
+                      <X className="w-4 h-4 text-destructive" />
+                      Para descarte → Inativo
+                    </div>
+                  </SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="dataDevolucao">Data de Devolução</Label>
+              <Input
+                id="dataDevolucao"
+                type="date"
+                value={formDataDevolucao.dataDevolucao}
+                onChange={(e) =>
+                  setFormDataDevolucao({
+                    ...formDataDevolucao,
+                    dataDevolucao: e.target.value,
+                  })
+                }
+                className="mt-2"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="observacoesDevolucao">Observações</Label>
+              <Input
+                id="observacoesDevolucao"
+                placeholder="Observações sobre a devolução (opcional)"
+                value={formDataDevolucao.observacoes}
+                onChange={(e) =>
+                  setFormDataDevolucao({
+                    ...formDataDevolucao,
+                    observacoes: e.target.value,
+                  })
+                }
+                className="mt-2"
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={closeModal} disabled={isLoading}>
+              Cancelar
+            </Button>
+            <Button
+              onClick={handleDevolucao}
+              disabled={!formDataDevolucao.condicaoRetorno || isLoading}
+              className="gap-2"
+            >
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Processando...
+                </>
+              ) : (
+                <>
+                  <FileText className="w-4 h-4" />
+                  Confirmar Devolução e Gerar Termo
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
