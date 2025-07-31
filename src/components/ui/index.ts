@@ -37,3 +37,13 @@ export {
   PaginationNext,
   PaginationPrevious,
 } from "./pagination";
+export { Tabs, TabsList, TabsTrigger, TabsContent } from "./tabs";
+export {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription,
+  DialogFooter,
+} from "./dialog";
