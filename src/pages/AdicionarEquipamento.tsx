@@ -31,7 +31,13 @@ import {
 } from "lucide-react";
 
 // Tipos para os equipamentos
-type EquipmentType = "notebook" | "celular" | "monitor" | "chip" | "impressora" | "outros";
+type EquipmentType =
+  | "notebook"
+  | "celular"
+  | "monitor"
+  | "chip"
+  | "impressora"
+  | "outros";
 
 interface BaseFormData {
   // Informações Gerais (Campos Comuns)
@@ -51,7 +57,7 @@ const AdicionarEquipamento = () => {
   const navigate = useNavigate();
   const [selectedType, setSelectedType] = useState<EquipmentType | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  
+
   // Estado inicial do formulário
   const [formData, setFormData] = useState<BaseFormData>({
     numeroPatrimonio: "",
@@ -195,25 +201,25 @@ const AdicionarEquipamento = () => {
   };
 
   const handleInputChange = (field: keyof BaseFormData, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSpecificInputChange = (field: string, value: string) => {
     switch (selectedType) {
       case "notebook":
-        setNotebookData(prev => ({ ...prev, [field]: value }));
+        setNotebookData((prev) => ({ ...prev, [field]: value }));
         break;
       case "celular":
-        setCelularData(prev => ({ ...prev, [field]: value }));
+        setCelularData((prev) => ({ ...prev, [field]: value }));
         break;
       case "monitor":
-        setMonitorData(prev => ({ ...prev, [field]: value }));
+        setMonitorData((prev) => ({ ...prev, [field]: value }));
         break;
       case "chip":
-        setChipData(prev => ({ ...prev, [field]: value }));
+        setChipData((prev) => ({ ...prev, [field]: value }));
         break;
       case "impressora":
-        setImpressoraData(prev => ({ ...prev, [field]: value }));
+        setImpressoraData((prev) => ({ ...prev, [field]: value }));
         break;
     }
   };
@@ -257,17 +263,20 @@ const AdicionarEquipamento = () => {
       console.log("Dados:", equipmentDTO);
 
       // Simular chamada da API
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       // Simular ID do equipamento criado
       const equipamentoId = Math.floor(Math.random() * 1000) + 1;
 
       // Toast de sucesso (simulado)
-      console.log(`✅ ${equipmentTypes.find(t => t.value === selectedType)?.label} ${formData.marca} ${formData.modelo} cadastrado com sucesso!`);
+      console.log(
+        `✅ ${equipmentTypes.find((t) => t.value === selectedType)?.label} ${
+          formData.marca
+        } ${formData.modelo} cadastrado com sucesso!`
+      );
 
       // Redirecionar para detalhes do equipamento
       navigate(`/equipamentos/${equipamentoId}`);
-
     } catch (error) {
       console.error("Erro ao cadastrar equipamento:", error);
       // Aqui seria mostrado toast de erro
@@ -298,7 +307,9 @@ const AdicionarEquipamento = () => {
               onClick={() => handleTypeSelect(type.value)}
             >
               <CardContent className="p-6 text-center">
-                <div className={`w-16 h-16 ${type.color} rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform`}>
+                <div
+                  className={`w-16 h-16 ${type.color} rounded-xl flex items-center justify-center mx-auto mb-4 group-hover:scale-110 transition-transform`}
+                >
                   <Icon className="w-8 h-8 text-white" />
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">
@@ -317,14 +328,18 @@ const AdicionarEquipamento = () => {
 
   // Componente DynamicEquipmentForm
   const DynamicEquipmentForm = () => {
-    const selectedTypeInfo = equipmentTypes.find(t => t.value === selectedType);
+    const selectedTypeInfo = equipmentTypes.find(
+      (t) => t.value === selectedType
+    );
     const Icon = selectedTypeInfo?.icon || Package;
 
     return (
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Header do Formulário */}
         <div className="flex items-center gap-3 mb-6">
-          <div className={`w-12 h-12 ${selectedTypeInfo?.color} rounded-lg flex items-center justify-center`}>
+          <div
+            className={`w-12 h-12 ${selectedTypeInfo?.color} rounded-lg flex items-center justify-center`}
+          >
             <Icon className="w-6 h-6 text-white" />
           </div>
           <div>
@@ -353,7 +368,9 @@ const AdicionarEquipamento = () => {
                   id="numeroPatrimonio"
                   placeholder="Ex: NB001, CEL002, MON003"
                   value={formData.numeroPatrimonio}
-                  onChange={(e) => handleInputChange("numeroPatrimonio", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("numeroPatrimonio", e.target.value)
+                  }
                   required
                   className="mt-2"
                 />
@@ -364,7 +381,9 @@ const AdicionarEquipamento = () => {
                   id="numeroSerie"
                   placeholder="Ex: ABC123456789"
                   value={formData.numeroSerie}
-                  onChange={(e) => handleInputChange("numeroSerie", e.target.value)}
+                  onChange={(e) =>
+                    handleInputChange("numeroSerie", e.target.value)
+                  }
                   required
                   className="mt-2"
                 />
@@ -399,7 +418,10 @@ const AdicionarEquipamento = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <Label htmlFor="status">Status</Label>
-                <Select value={formData.status} onValueChange={(value) => handleInputChange("status", value)}>
+                <Select
+                  value={formData.status}
+                  onValueChange={(value) => handleInputChange("status", value)}
+                >
                   <SelectTrigger className="mt-2">
                     <SelectValue />
                   </SelectTrigger>
@@ -414,7 +436,12 @@ const AdicionarEquipamento = () => {
               </div>
               <div>
                 <Label htmlFor="estadoConservacao">Estado de Conservação</Label>
-                <Select value={formData.estadoConservacao} onValueChange={(value) => handleInputChange("estadoConservacao", value)}>
+                <Select
+                  value={formData.estadoConservacao}
+                  onValueChange={(value) =>
+                    handleInputChange("estadoConservacao", value)
+                  }
+                >
                   <SelectTrigger className="mt-2">
                     <SelectValue />
                   </SelectTrigger>
@@ -445,7 +472,12 @@ const AdicionarEquipamento = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
                 <Label htmlFor="empresaId">Empresa *</Label>
-                <Select value={formData.empresaId} onValueChange={(value) => handleInputChange("empresaId", value)}>
+                <Select
+                  value={formData.empresaId}
+                  onValueChange={(value) =>
+                    handleInputChange("empresaId", value)
+                  }
+                >
                   <SelectTrigger className="mt-2">
                     <SelectValue placeholder="Selecione a empresa" />
                   </SelectTrigger>
@@ -463,7 +495,12 @@ const AdicionarEquipamento = () => {
               </div>
               <div>
                 <Label htmlFor="departamentoId">Departamento *</Label>
-                <Select value={formData.departamentoId} onValueChange={(value) => handleInputChange("departamentoId", value)}>
+                <Select
+                  value={formData.departamentoId}
+                  onValueChange={(value) =>
+                    handleInputChange("departamentoId", value)
+                  }
+                >
                   <SelectTrigger className="mt-2">
                     <SelectValue placeholder="Selecione o departamento" />
                   </SelectTrigger>
@@ -487,7 +524,9 @@ const AdicionarEquipamento = () => {
                 id="notaFiscal"
                 placeholder="Número da nota fiscal (opcional)"
                 value={formData.notaFiscal}
-                onChange={(e) => handleInputChange("notaFiscal", e.target.value)}
+                onChange={(e) =>
+                  handleInputChange("notaFiscal", e.target.value)
+                }
                 className="mt-2"
               />
             </div>
@@ -510,7 +549,15 @@ const AdicionarEquipamento = () => {
           </Button>
           <Button
             type="submit"
-            disabled={isLoading || !formData.numeroPatrimonio || !formData.marca || !formData.modelo || !formData.valor || !formData.empresaId || !formData.departamentoId}
+            disabled={
+              isLoading ||
+              !formData.numeroPatrimonio ||
+              !formData.marca ||
+              !formData.modelo ||
+              !formData.valor ||
+              !formData.empresaId ||
+              !formData.departamentoId
+            }
             className="flex-1 gap-2"
           >
             {isLoading ? (
@@ -547,8 +594,15 @@ const AdicionarEquipamento = () => {
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="sistemaOperacional">Sistema Operacional</Label>
-                  <Select value={notebookData.sistemaOperacional} onValueChange={(value) => handleSpecificInputChange("sistemaOperacional", value)}>
+                  <Label htmlFor="sistemaOperacional">
+                    Sistema Operacional
+                  </Label>
+                  <Select
+                    value={notebookData.sistemaOperacional}
+                    onValueChange={(value) =>
+                      handleSpecificInputChange("sistemaOperacional", value)
+                    }
+                  >
                     <SelectTrigger className={commonClasses}>
                       <SelectValue placeholder="Selecione o SO" />
                     </SelectTrigger>
@@ -567,7 +621,9 @@ const AdicionarEquipamento = () => {
                     id="processador"
                     placeholder="Ex: Intel Core i5-11400H"
                     value={notebookData.processador}
-                    onChange={(e) => handleSpecificInputChange("processador", e.target.value)}
+                    onChange={(e) =>
+                      handleSpecificInputChange("processador", e.target.value)
+                    }
                     className={commonClasses}
                   />
                 </div>
@@ -575,7 +631,12 @@ const AdicionarEquipamento = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="memoriaRam">Memória RAM</Label>
-                  <Select value={notebookData.memoriaRam} onValueChange={(value) => handleSpecificInputChange("memoriaRam", value)}>
+                  <Select
+                    value={notebookData.memoriaRam}
+                    onValueChange={(value) =>
+                      handleSpecificInputChange("memoriaRam", value)
+                    }
+                  >
                     <SelectTrigger className={commonClasses}>
                       <SelectValue placeholder="Selecione a RAM" />
                     </SelectTrigger>
@@ -590,7 +651,12 @@ const AdicionarEquipamento = () => {
                 </div>
                 <div>
                   <Label htmlFor="armazenamento">Armazenamento</Label>
-                  <Select value={notebookData.armazenamento} onValueChange={(value) => handleSpecificInputChange("armazenamento", value)}>
+                  <Select
+                    value={notebookData.armazenamento}
+                    onValueChange={(value) =>
+                      handleSpecificInputChange("armazenamento", value)
+                    }
+                  >
                     <SelectTrigger className={commonClasses}>
                       <SelectValue placeholder="Selecione o armazenamento" />
                     </SelectTrigger>
@@ -611,7 +677,9 @@ const AdicionarEquipamento = () => {
                     id="hostname"
                     placeholder="Ex: NB-JOAO-001"
                     value={notebookData.hostname}
-                    onChange={(e) => handleSpecificInputChange("hostname", e.target.value)}
+                    onChange={(e) =>
+                      handleSpecificInputChange("hostname", e.target.value)
+                    }
                     className={commonClasses}
                   />
                 </div>
@@ -621,7 +689,9 @@ const AdicionarEquipamento = () => {
                     id="enderecoMac"
                     placeholder="Ex: 00:1B:44:11:3A:B7"
                     value={notebookData.enderecoMac}
-                    onChange={(e) => handleSpecificInputChange("enderecoMac", e.target.value)}
+                    onChange={(e) =>
+                      handleSpecificInputChange("enderecoMac", e.target.value)
+                    }
                     className={commonClasses}
                   />
                 </div>
@@ -647,7 +717,9 @@ const AdicionarEquipamento = () => {
                     id="imei"
                     placeholder="Ex: 123456789012345"
                     value={celularData.imei}
-                    onChange={(e) => handleSpecificInputChange("imei", e.target.value)}
+                    onChange={(e) =>
+                      handleSpecificInputChange("imei", e.target.value)
+                    }
                     required
                     className={commonClasses}
                   />
@@ -658,15 +730,27 @@ const AdicionarEquipamento = () => {
                     id="eid"
                     placeholder="Ex: 89049032000000000000000000000001"
                     value={celularData.eid}
-                    onChange={(e) => handleSpecificInputChange("eid", e.target.value)}
+                    onChange={(e) =>
+                      handleSpecificInputChange("eid", e.target.value)
+                    }
                     className={commonClasses}
                   />
                 </div>
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="capacidadeArmazenamento">Capacidade de Armazenamento</Label>
-                  <Select value={celularData.capacidadeArmazenamento} onValueChange={(value) => handleSpecificInputChange("capacidadeArmazenamento", value)}>
+                  <Label htmlFor="capacidadeArmazenamento">
+                    Capacidade de Armazenamento
+                  </Label>
+                  <Select
+                    value={celularData.capacidadeArmazenamento}
+                    onValueChange={(value) =>
+                      handleSpecificInputChange(
+                        "capacidadeArmazenamento",
+                        value
+                      )
+                    }
+                  >
                     <SelectTrigger className={commonClasses}>
                       <SelectValue placeholder="Selecione a capacidade" />
                     </SelectTrigger>
@@ -680,8 +764,15 @@ const AdicionarEquipamento = () => {
                   </Select>
                 </div>
                 <div>
-                  <Label htmlFor="sistemaOperacionalCelular">Sistema Operacional</Label>
-                  <Select value={celularData.sistemaOperacional} onValueChange={(value) => handleSpecificInputChange("sistemaOperacional", value)}>
+                  <Label htmlFor="sistemaOperacionalCelular">
+                    Sistema Operacional
+                  </Label>
+                  <Select
+                    value={celularData.sistemaOperacional}
+                    onValueChange={(value) =>
+                      handleSpecificInputChange("sistemaOperacional", value)
+                    }
+                  >
                     <SelectTrigger className={commonClasses}>
                       <SelectValue placeholder="Selecione o SO" />
                     </SelectTrigger>
@@ -710,7 +801,12 @@ const AdicionarEquipamento = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="tamanhoTela">Tamanho da Tela</Label>
-                  <Select value={monitorData.tamanhoTela} onValueChange={(value) => handleSpecificInputChange("tamanhoTela", value)}>
+                  <Select
+                    value={monitorData.tamanhoTela}
+                    onValueChange={(value) =>
+                      handleSpecificInputChange("tamanhoTela", value)
+                    }
+                  >
                     <SelectTrigger className={commonClasses}>
                       <SelectValue placeholder="Selecione o tamanho" />
                     </SelectTrigger>
@@ -726,7 +822,12 @@ const AdicionarEquipamento = () => {
                 </div>
                 <div>
                   <Label htmlFor="resolucao">Resolução</Label>
-                  <Select value={monitorData.resolucao} onValueChange={(value) => handleSpecificInputChange("resolucao", value)}>
+                  <Select
+                    value={monitorData.resolucao}
+                    onValueChange={(value) =>
+                      handleSpecificInputChange("resolucao", value)
+                    }
+                  >
                     <SelectTrigger className={commonClasses}>
                       <SelectValue placeholder="Selecione a resolução" />
                     </SelectTrigger>
@@ -734,7 +835,9 @@ const AdicionarEquipamento = () => {
                       <SelectItem value="1080p">1920x1080 (Full HD)</SelectItem>
                       <SelectItem value="1440p">2560x1440 (QHD)</SelectItem>
                       <SelectItem value="4k">3840x2160 (4K)</SelectItem>
-                      <SelectItem value="ultrawide">3440x1440 (Ultrawide)</SelectItem>
+                      <SelectItem value="ultrawide">
+                        3440x1440 (Ultrawide)
+                      </SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -742,7 +845,12 @@ const AdicionarEquipamento = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="tipoConexao">Tipo de Conexão</Label>
-                  <Select value={monitorData.tipoConexao} onValueChange={(value) => handleSpecificInputChange("tipoConexao", value)}>
+                  <Select
+                    value={monitorData.tipoConexao}
+                    onValueChange={(value) =>
+                      handleSpecificInputChange("tipoConexao", value)
+                    }
+                  >
                     <SelectTrigger className={commonClasses}>
                       <SelectValue placeholder="Selecione a conexão" />
                     </SelectTrigger>
@@ -757,7 +865,12 @@ const AdicionarEquipamento = () => {
                 </div>
                 <div>
                   <Label htmlFor="taxaAtualizacao">Taxa de Atualização</Label>
-                  <Select value={monitorData.taxaAtualizacao} onValueChange={(value) => handleSpecificInputChange("taxaAtualizacao", value)}>
+                  <Select
+                    value={monitorData.taxaAtualizacao}
+                    onValueChange={(value) =>
+                      handleSpecificInputChange("taxaAtualizacao", value)
+                    }
+                  >
                     <SelectTrigger className={commonClasses}>
                       <SelectValue placeholder="Selecione a taxa" />
                     </SelectTrigger>
@@ -792,14 +905,21 @@ const AdicionarEquipamento = () => {
                     id="numero"
                     placeholder="Ex: (11) 99999-9999"
                     value={chipData.numero}
-                    onChange={(e) => handleSpecificInputChange("numero", e.target.value)}
+                    onChange={(e) =>
+                      handleSpecificInputChange("numero", e.target.value)
+                    }
                     required
                     className={commonClasses}
                   />
                 </div>
                 <div>
                   <Label htmlFor="operadora">Operadora</Label>
-                  <Select value={chipData.operadora} onValueChange={(value) => handleSpecificInputChange("operadora", value)}>
+                  <Select
+                    value={chipData.operadora}
+                    onValueChange={(value) =>
+                      handleSpecificInputChange("operadora", value)
+                    }
+                  >
                     <SelectTrigger className={commonClasses}>
                       <SelectValue placeholder="Selecione a operadora" />
                     </SelectTrigger>
@@ -820,7 +940,9 @@ const AdicionarEquipamento = () => {
                     id="plano"
                     placeholder="Ex: Controle 50GB"
                     value={chipData.plano}
-                    onChange={(e) => handleSpecificInputChange("plano", e.target.value)}
+                    onChange={(e) =>
+                      handleSpecificInputChange("plano", e.target.value)
+                    }
                     className={commonClasses}
                   />
                 </div>
@@ -830,7 +952,9 @@ const AdicionarEquipamento = () => {
                     id="iccid"
                     placeholder="Ex: 8955061500002154712"
                     value={chipData.iccid}
-                    onChange={(e) => handleSpecificInputChange("iccid", e.target.value)}
+                    onChange={(e) =>
+                      handleSpecificInputChange("iccid", e.target.value)
+                    }
                     className={commonClasses}
                   />
                 </div>
@@ -852,7 +976,12 @@ const AdicionarEquipamento = () => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="tipoImpressao">Tipo de Impressão</Label>
-                  <Select value={impressoraData.tipoImpressao} onValueChange={(value) => handleSpecificInputChange("tipoImpressao", value)}>
+                  <Select
+                    value={impressoraData.tipoImpressao}
+                    onValueChange={(value) =>
+                      handleSpecificInputChange("tipoImpressao", value)
+                    }
+                  >
                     <SelectTrigger className={commonClasses}>
                       <SelectValue placeholder="Selecione o tipo" />
                     </SelectTrigger>
@@ -866,7 +995,12 @@ const AdicionarEquipamento = () => {
                 </div>
                 <div>
                   <Label htmlFor="conectividade">Conectividade</Label>
-                  <Select value={impressoraData.conectividade} onValueChange={(value) => handleSpecificInputChange("conectividade", value)}>
+                  <Select
+                    value={impressoraData.conectividade}
+                    onValueChange={(value) =>
+                      handleSpecificInputChange("conectividade", value)
+                    }
+                  >
                     <SelectTrigger className={commonClasses}>
                       <SelectValue placeholder="Selecione a conectividade" />
                     </SelectTrigger>
@@ -882,12 +1016,19 @@ const AdicionarEquipamento = () => {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <Label htmlFor="velocidadeImpressao">Velocidade de Impressão</Label>
+                  <Label htmlFor="velocidadeImpressao">
+                    Velocidade de Impressão
+                  </Label>
                   <Input
                     id="velocidadeImpressao"
                     placeholder="Ex: 20 ppm"
                     value={impressoraData.velocidadeImpressao}
-                    onChange={(e) => handleSpecificInputChange("velocidadeImpressao", e.target.value)}
+                    onChange={(e) =>
+                      handleSpecificInputChange(
+                        "velocidadeImpressao",
+                        e.target.value
+                      )
+                    }
                     className={commonClasses}
                   />
                 </div>
@@ -897,7 +1038,12 @@ const AdicionarEquipamento = () => {
                     id="capacidadePapel"
                     placeholder="Ex: 250 folhas"
                     value={impressoraData.capacidadePapel}
-                    onChange={(e) => handleSpecificInputChange("capacidadePapel", e.target.value)}
+                    onChange={(e) =>
+                      handleSpecificInputChange(
+                        "capacidadePapel",
+                        e.target.value
+                      )
+                    }
                     className={commonClasses}
                   />
                 </div>
@@ -920,14 +1066,19 @@ const AdicionarEquipamento = () => {
             {selectedType ? "Novo Equipamento" : "Adicionar Equipamento"}
           </h1>
           <p className="text-muted-foreground">
-            {selectedType 
-              ? `Cadastre um novo ${equipmentTypes.find(t => t.value === selectedType)?.label.toLowerCase()} no sistema`
-              : "Selecione o tipo de equipamento que deseja cadastrar"
-            }
+            {selectedType
+              ? `Cadastre um novo ${equipmentTypes
+                  .find((t) => t.value === selectedType)
+                  ?.label.toLowerCase()} no sistema`
+              : "Selecione o tipo de equipamento que deseja cadastrar"}
           </p>
         </div>
         {!selectedType && (
-          <Button variant="outline" onClick={() => navigate("/equipamentos")} className="gap-2">
+          <Button
+            variant="outline"
+            onClick={() => navigate("/equipamentos")}
+            className="gap-2"
+          >
             <ArrowLeft className="w-4 h-4" />
             Voltar para Equipamentos
           </Button>

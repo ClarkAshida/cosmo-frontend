@@ -610,7 +610,10 @@ const Equipamentos = () => {
             Gerencie o inventário completo de ativos de TI
           </p>
         </div>
-        <Button className="gap-2" onClick={() => navigate("/equipamentos/novo")}>
+        <Button
+          className="gap-2"
+          onClick={() => navigate("/equipamentos/novo")}
+        >
           <Plus className="w-4 h-4" />
           Novo Equipamento
         </Button>
