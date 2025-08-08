@@ -19,10 +19,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/criar-termo" element={<CreateTerm />} />
         <Route path="/equipamentos" element={<Equipamentos />} />
-        <Route
-          path="/adicionar-equipamento"
-          element={<AdicionarEquipamento />}
-        />
+        <Route path="/equipamentos/novo" element={<AdicionarEquipamento />} />
         <Route path="/usuarios" element={<Usuarios />} />
         <Route path="/historico" element={<Historico />} />
         <Route path="/configuracoes" element={<Configuracoes />} />

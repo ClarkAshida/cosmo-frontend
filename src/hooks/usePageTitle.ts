@@ -7,6 +7,7 @@ export const usePageTitle = () => {
     "/": "Dashboard",
     "/criar-termo": "Criar Termo",
     "/equipamentos": "Equipamentos",
+    "/equipamentos/novo": "Novo Equipamento",
     "/usuarios": "Usuários",
     "/historico": "Histórico",
     "/configuracoes": "Configurações",
