@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { ChevronDown, User, LogOut, Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { useAuth } from "@/hooks/useAuth";
 
 interface HeaderProps {
   pageTitle: string;
@@ -11,16 +12,10 @@ interface HeaderProps {
 const Header = ({ pageTitle, onMenuClick }: HeaderProps) => {
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-
-  // Simulação de usuário logado - você pode substituir por um contexto real depois
-  const [user, setUser] = useState({
-    isLoggedIn: true,
-    name: "Flávio Severiano",
-    type: "Administrador",
-  });
+  const { user, logout, isAuthenticated } = useAuth();
 
   const handleLogout = () => {
-    setUser({ isLoggedIn: false, name: "", type: "" });
+    logout();
     setIsUserMenuOpen(false);
   };
 
@@ -58,7 +53,7 @@ const Header = ({ pageTitle, onMenuClick }: HeaderProps) => {
 
       {/* User Menu */}
       <div className="relative" ref={dropdownRef}>
-        {user.isLoggedIn ? (
+        {isAuthenticated && user ? (
           <div>
             <Button
               variant="ghost"
@@ -70,9 +65,9 @@ const Header = ({ pageTitle, onMenuClick }: HeaderProps) => {
               </div>
               <div className="text-left hidden sm:block">
                 <p className="text-sm font-medium text-foreground">
-                  {user.name}
+                  {user.username}
                 </p>
-                <p className="text-xs text-muted-foreground">{user.type}</p>
+                <p className="text-xs text-muted-foreground">{user.email}</p>
               </div>
               <ChevronDown className="w-4 h-4 text-muted-foreground" />
             </Button>
@@ -85,7 +80,7 @@ const Header = ({ pageTitle, onMenuClick }: HeaderProps) => {
                     <Button
                       variant="ghost"
                       onClick={handleLogout}
-                      className="w-full justify-start flex items-center space-x-2"
+                      className="w-full justify-start flex items-center space-x-2 text-red-600 hover:text-red-700 hover:bg-red-50"
                     >
                       <LogOut className="w-4 h-4" />
                       <span>Sair</span>
