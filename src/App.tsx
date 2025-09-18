@@ -3,6 +3,8 @@ import Layout from "./components/Layout";
 import { usePageTitle } from "./hooks/usePageTitle";
 import { useAuth } from "./hooks/useAuth";
 import { AuthProvider } from "./contexts/AuthContext";
+import { EmpresaProvider } from "./contexts/EmpresaContext";
+import { DepartamentoProvider } from "./contexts/DepartamentoContext";
 import { TokenManager } from "./components/TokenManager";
 import Home from "./pages/Home";
 import CreateTerm from "./pages/CreateTerm";
@@ -87,8 +89,12 @@ const AppContent: React.FC = () => {
 function App() {
   return (
     <AuthProvider>
-      <TokenManager />
-      <AppContent />
+      <EmpresaProvider>
+        <DepartamentoProvider>
+          <TokenManager />
+          <AppContent />
+        </DepartamentoProvider>
+      </EmpresaProvider>
     </AuthProvider>
   );
 }
